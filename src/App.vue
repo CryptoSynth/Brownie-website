@@ -1,13 +1,13 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer width="400px" v-model="drawer" app right clipped>
-      <v-list rounded v-for="product in products" :key="product.id">
-        <CartItemCard :product="product" />
+      <v-list rounded v-for="(item, index) in cart" :key="item.id">
+        <CartItemCard :quantity="quantity" :index="index" :item="item" />
       </v-list>
       <v-list>
         <v-sheet class="ma-3" height="100">
           <v-row class="fill-height" align="center" justify="center">
-            <h1 class="text-uppercase">total: $0.00</h1>
+            <h1 class="text-uppercase">total: {{total | currency}}</h1>
           </v-row>
         </v-sheet>
       </v-list>
@@ -19,9 +19,19 @@
     </v-navigation-drawer>
 
     <v-app-bar app clipped-right>
-      <v-toolbar-title>{ WEBSTIE NAME }</v-toolbar-title>
+      <v-toolbar-title>Brownie Inc.</v-toolbar-title>
       <v-spacer></v-spacer>
+      <Login />
       <v-btn shapped md color="purple accent-3" @click.stop="drawer = !drawer">
+        <v-badge
+          light
+          offset-y="-7"
+          offset-x="-22"
+          bordered
+          v-if="getCartQuantity !== 0"
+          color="pink accent-3"
+          :content="getCartQuantity"
+        ></v-badge>
         <v-icon md color="white">mdi-cart-outline</v-icon>
       </v-btn>
     </v-app-bar>
@@ -29,7 +39,7 @@
     <v-content>
       <v-container fluid>
         <Landing />
-        <Products :products="products" />
+        <Products :quantity="quantity" :products="products" />
       </v-container>
     </v-content>
 
@@ -43,7 +53,8 @@
 import Landing from "./components/Landing";
 import Products from "./components/Products";
 import CartItemCard from "./components/CartItemCard";
-import { mapState } from "vuex";
+import Login from "./components/Login";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "App",
@@ -51,7 +62,8 @@ export default {
   components: {
     Landing,
     Products,
-    CartItemCard
+    CartItemCard,
+    Login
   },
 
   data: () => ({
@@ -60,7 +72,20 @@ export default {
   }),
 
   computed: {
-    ...mapState(["products"])
+    ...mapState(["products", "cart", "quantity"]),
+    ...mapGetters(["getCartQuantity"]),
+
+    total() {
+      let totalItemPrice = 0;
+
+      if (this.cart.length === 0) return (totalItemPrice = 0);
+
+      this.cart.forEach(item => {
+        totalItemPrice = totalItemPrice + item.price * item.quantity;
+      });
+
+      return totalItemPrice;
+    }
   },
 
   async created() {

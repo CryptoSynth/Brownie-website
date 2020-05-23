@@ -1,36 +1,35 @@
 <template>
-  <v-row class="section" align="center" justify="center">
-    <v-col class="text-center" cols="12" md="5">
-      <v-col>
+  <video-background
+    :src="require('@/assets/videos/brownie-rough.mp4')"
+    style="height: 84vh; border-radius: 5px"
+  >
+    <v-row class="fill-height" align="center" no-gutters>
+      <v-spacer></v-spacer>
+      <v-col cols="12" md="6">
         <v-sheet
-          class="d-flex flex-column justify-space-around align-center"
-          color="pink accent-1"
-          height="350px"
+          class="d-flex flex-column justify-space-around align-center pa-5 text-center"
+          height="500px"
+          color="transparent"
         >
-          <h1>Company Title</h1>
-          <h1>Company Moto</h1>
-          <h1>Extra Info</h1>
+          <h1 class="display-3">Company Title</h1>
+          <h1 class="display-1">Company Moto</h1>
+          <p>ELorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+          <SignUp />
         </v-sheet>
       </v-col>
-      <v-col>
-        <v-btn min-width="200px" large color="purple accent-3">Sign Up</v-btn>
-      </v-col>
-    </v-col>
-    <v-col cols="12" md="7">
-      <v-sheet
-        class="d-flex flex-column justify-center align-center"
-        height="480px"
-        color="pink accent-1"
-      >
-        <h1 class>Video Goes Here</h1>
-      </v-sheet>
-    </v-col>
-  </v-row>
+    </v-row>
+  </video-background>
 </template>
 
 <script>
+import SignUp from "../components/SignUp";
+
 export default {
   name: "landing-section",
+
+  components: {
+    SignUp
+  },
 
   data() {
     return {};
