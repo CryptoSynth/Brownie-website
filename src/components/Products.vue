@@ -27,7 +27,7 @@
       <v-card>
         <v-img height="530px" src="@/assets/images/custom-brownie.jpg">
           <v-overlay absolute>
-            <BuildBox :cart="cart" :cartStep="cartStep" />
+            <BuildBox />
           </v-overlay>
         </v-img>
       </v-card>
@@ -57,8 +57,6 @@ export default {
 
   data() {
     return {
-      cart: false,
-      cartStep: 1,
       timeout: 2000,
       name: "",
       snackbar: false
@@ -82,6 +80,7 @@ export default {
       this.$store.dispatch("addToCart", newItemProp);
 
       if (this.isInCart) this.snackbar = true;
+      //open nav drawer
     }
   },
 

@@ -1,16 +1,25 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer width="400px" v-model="drawer" app right clipped>
-      <v-list rounded v-for="(item, index) in cart" :key="item.id">
-        <CartItemCard :quantity="quantity" :index="index" :item="item" />
+      <v-list dense rounded>
+        <v-list-item v-for="(item, index) in cart" :key="item.id">
+          <v-list-item-content>
+            <CartItemCard :quantity="quantity" :index="index" :item="item" />
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-sheet height="100">
+              <v-container class="fill-height" fluid>
+                <v-row justify="center" align="center">
+                  <h1 class="text-uppercase">total: {{total | currency}}</h1>
+                </v-row>
+              </v-container>
+            </v-sheet>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
-      <v-list>
-        <v-sheet class="ma-3" height="100">
-          <v-row class="fill-height" align="center" justify="center">
-            <h1 class="text-uppercase">total: {{total | currency}}</h1>
-          </v-row>
-        </v-sheet>
-      </v-list>
+
       <template v-slot:append>
         <div class="py-2 px-6">
           <v-btn color="purple accent-3" block>Checkout</v-btn>
@@ -100,10 +109,33 @@ export default {
 };
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 .section {
   height: 85vh;
 }
+
+/* ::-webkit-scrollbar {
+  width: 18px;
+  background-color: black;
+}
+::-webkit-scrollbar-thumb {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  background-color: rgba(214, 57, 235, 0.5);
+  -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05),
+    inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+} */
+
+/* html {
+  overflow: hidden !important;
+}
+
+.v-content {
+  height: 100vh;
+  flex-direction: column;
+  overflow: scroll;
+} */
 
 @media (max-width: 960px) {
   .section {
