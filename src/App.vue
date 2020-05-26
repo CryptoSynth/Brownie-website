@@ -1,10 +1,10 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer width="400px" v-model="drawer" app right clipped>
+    <v-navigation-drawer width="400px" v-model="updateCartState" app right clipped>
       <v-list dense rounded>
         <v-list-item v-for="(item, index) in cart" :key="item.id">
           <v-list-item-content>
-            <CartItemCard :quantity="quantity" :index="index" :item="item" />
+            <CartItemCard :cart="cart" :quantity="quantity" :index="index" :item="item" />
           </v-list-item-content>
         </v-list-item>
         <v-list-item>
@@ -31,7 +31,7 @@
       <v-toolbar-title>Brownie Inc.</v-toolbar-title>
       <v-spacer></v-spacer>
       <Login />
-      <v-btn shapped md color="purple accent-3" @click.stop="drawer = !drawer">
+      <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
         <v-badge
           light
           offset-y="-7"
@@ -76,12 +76,11 @@ export default {
   },
 
   data: () => ({
-    drawer: false,
     toggleDark: true
   }),
 
   computed: {
-    ...mapState(["products", "cart", "quantity"]),
+    ...mapState(["products", "cart", "quantity", "drawer"]),
     ...mapGetters(["getCartQuantity"]),
 
     total() {
@@ -94,6 +93,15 @@ export default {
       });
 
       return totalItemPrice;
+    },
+
+    updateCartState: {
+      get() {
+        return this.drawer;
+      },
+      set(isOpen) {
+        this.$store.dispatch("updateCartState", isOpen);
+      }
     }
   },
 

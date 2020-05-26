@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     products: [],
     cart: [],
-    isInCart: false
+    isInCart: false,
+    drawer: false
   },
 
   mutations: {
@@ -16,7 +17,8 @@ export default new Vuex.Store({
     PUSH_TO_CART: (state, item) => state.cart.push(item),
     REMOVE_FROM_CART: (state, index) => state.cart.splice(index, 1),
     INCREMENT_COUNT: (state, index) => (state.cart[index].quantity += 1),
-    DECREMENT_COUNT: (state, index) => (state.cart[index].quantity -= 1)
+    DECREMENT_COUNT: (state, index) => (state.cart[index].quantity -= 1),
+    UPDATE_CART_STATE: (state, isOpen) => (state.drawer = isOpen)
   },
 
   actions: {
@@ -49,12 +51,16 @@ export default new Vuex.Store({
     sub: ({ commit, state }, index) => {
       if (state.cart[index].quantity <= 1) return state.cart[index].quantity;
       commit('DECREMENT_COUNT', index);
+    },
+
+    updateCartState({ commit }, isOpen) {
+      commit('UPDATE_CART_STATE', isOpen);
     }
   },
 
-  modules: {},
-
   getters: {
     getCartQuantity: (state) => state.cart.length
-  }
+  },
+
+  modules: {}
 });

@@ -63,7 +63,7 @@
 export default {
   name: "cart-item-card",
 
-  props: ["item", "index", "quantity"],
+  props: ["cart", "item", "index", "quantity"],
 
   data() {
     return {};
@@ -80,6 +80,9 @@ export default {
 
     removeFromCart() {
       this.$store.dispatch("removeFromCart", this.index);
+
+      if (this.cart.length === 0)
+        this.$store.dispatch("updateCartState", false);
     }
   },
 

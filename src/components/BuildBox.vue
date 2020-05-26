@@ -5,141 +5,107 @@
         <v-btn color="pink accent-3" v-on="on">You Choose</v-btn>
       </template>
 
-      <v-stepper v-model="customstep" vertical>
-        <template v-for="(step, index) in steps">
-          <v-stepper-step
-            editable
-            :key="index"
-            color="pink accent-2"
-            :complete="customstep > step"
-            :step="step"
-          >Brownie #{{step}}</v-stepper-step>
+      <v-form ref="customForm">
+        <v-stepper v-model="customstep" vertical>
+          <template v-for="(step, index) in steps">
+            <v-stepper-step
+              @click="removeItem(step, index)"
+              :editable="isComplete(step)"
+              :key="index"
+              color="pink accent-2"
+              :complete="isComplete(step)"
+              :step="step"
+            >Brownie #{{step}}</v-stepper-step>
 
-          <v-stepper-content :step="step" :key="index + 10">
-            <v-sheet color="pink accent-2" class="mb-5" height="250px">
-              <v-container class="fill-height" fluid>
-                <v-row justify="center" align="center" no-gutters>
-                  <v-col class="mt-7" cols="8">
-                    <v-select
-                      item-text="type"
-                      :items="choices.frosting"
-                      light
-                      chips
-                      solo
-                      v-model="selectedFrost"
-                      label="Frosting"
-                    >
-                      <template v-slot:selection="{item}">
-                        <v-chip class="text-capitalize" color="pink accent-1">
-                          <v-avatar left>
-                            <v-img :src="require(`../assets/images/${item.img}`)" />
-                          </v-avatar>
-                          {{item.type}}-Frosting
-                        </v-chip>
-                      </template>
-                      <template v-slot:item="{item}">
-                        <v-container fluid>
-                          <v-row justify="center" no-gutters>
-                            <v-col cols="3">
-                              <v-avatar tile left>
-                                <v-img :src="require(`../assets/images/${item.img}`)" />
-                              </v-avatar>
-                            </v-col>
-                            <v-col cols="9">
-                              <v-list-item-content class="text-capitalize">{{item.type}}</v-list-item-content>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-                      </template>
-                    </v-select>
-                    <v-select
-                      light
-                      chips
-                      solo
-                      v-model="selectedBat"
-                      :items="choices.batter"
-                      label="Batter"
-                    >
-                      <template v-slot:selection="{item}">
-                        <v-chip class="text-capitalize" color="pink accent-1">
-                          <v-avatar left>
-                            <v-img :src="require(`../assets/images/${item.img}`)" />
-                          </v-avatar>
-                          {{item.type}}-Batter
-                        </v-chip>
-                      </template>
-                      <template v-slot:item="{item}">
-                        <v-container fluid>
-                          <v-row justify="center" no-gutters>
-                            <v-col cols="3">
-                              <v-avatar tile left>
-                                <v-img :src="require(`../assets/images/${item.img}`)" />
-                              </v-avatar>
-                            </v-col>
-                            <v-col cols="9">
-                              <v-list-item-content class="text-capitalize">{{item.type}}</v-list-item-content>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-                      </template>
-                    </v-select>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-sheet>
-            <v-btn color="pink accent-3 mr-5" @click="add(step)">Add</v-btn>
-            <v-btn text>Cancel</v-btn>
-          </v-stepper-content>
-        </template>
+            <v-stepper-content :step="step" :key="index + 10">
+              <v-sheet light class="mb-5" height="250px">
+                <v-container class="fill-height" fluid>
+                  <v-row justify="center" align="center" no-gutters>
+                    <v-col class="mt-7" cols="8">
+                      <v-select
+                        dark
+                        :rules="frostingRule"
+                        color="pink accent-1"
+                        item-color="pink accent-1"
+                        item-text="type"
+                        :items="choices.frosting"
+                        chips
+                        solo
+                        v-model="selectedFrost"
+                        label="Frosting"
+                      >
+                        <template v-slot:selection="{item}">
+                          <BuildBoxCustomSelection :item="item">Frosting</BuildBoxCustomSelection>
+                        </template>
 
-        <v-stepper-step
-          color="pink accent-2"
-          :complete="customstep > steps.length + 1"
-          step="6"
-        >Brownie #6</v-stepper-step>
+                        <template v-slot:item="{item}">
+                          <BuildBoxCustomItem :item="item" />
+                        </template>
+                      </v-select>
 
-        <v-stepper-content step="6">
-          <v-card class="mb-12" color="pink accent-2" height="200px">
-            <v-container class="fill-height" fluid>
-              <v-row justify="center" align="center" no-gutters>
-                <v-col class="mt-7" cols="8">
-                  <v-select
-                    light
-                    chips
-                    solo
-                    v-model="selectedFrost"
-                    :items="choices.frosting"
-                    label="Frosting"
-                  ></v-select>
-                  <v-select
-                    light
-                    chips
-                    solo
-                    v-model="selectedBat"
-                    :items="choices.batter"
-                    label="Batter"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-          <v-btn color="pink accent-3 mr-5" @click="createBox(step)">Create Box</v-btn>
-          <v-btn text>Cancel</v-btn>
-        </v-stepper-content>
-      </v-stepper>
+                      <v-select
+                        dark
+                        color="pink accent-1"
+                        item-color="pink accent-1"
+                        :rules="batterRule"
+                        item-text="type"
+                        light
+                        chips
+                        solo
+                        v-model="selectedBat"
+                        :items="choices.batter"
+                        label="Batter"
+                      >
+                        <template v-slot:selection="{item}">
+                          <BuildBoxCustomSelection :item="item">Batter</BuildBoxCustomSelection>
+                        </template>
+
+                        <template v-slot:item="{item}">
+                          <BuildBoxCustomItem :item="item" />
+                        </template>
+                      </v-select>
+                    </v-col>
+                    <v-col class="text-center" cols="4">
+                      <v-btn
+                        dark
+                        v-if="step < steps.length"
+                        color="pink accent-3"
+                        @click="add(step)"
+                      >
+                        <v-icon left>mdi-plus</v-icon>add
+                      </v-btn>
+                      <v-btn dark v-else color="pink accent-3" @click="createBox()">
+                        <v-icon left>mdi-download</v-icon>Create
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-sheet>
+            </v-stepper-content>
+          </template>
+        </v-stepper>
+      </v-form>
     </v-dialog>
   </div>
 </template>
 
 <script>
+import BuildBoxCustomItem from "../components/BuildBoxCustomItem";
+import BuildBoxCustomSelection from "../components/BuildBoxCustomSelection";
+
 export default {
-  name: "buildbox",
+  name: "build-box",
+
+  components: {
+    BuildBoxCustomItem,
+    BuildBoxCustomSelection
+  },
 
   data() {
     return {
       custom: false,
       customstep: 1,
-      steps: [1, 2, 3, 4, 5],
+      steps: [1, 2, 3, 4, 5, 6],
       choices: {
         frosting: [
           { img: "choco-frosting.jpg", type: "chocolate" },
@@ -155,6 +121,8 @@ export default {
       },
       selectedFrost: "",
       selectedBat: "",
+      frostingRule: [v => !!v || "Selection is required"],
+      batterRule: [v => !!v || "Selection is required"],
       customBox: {
         id: 1,
         name: "Custom Box",
@@ -167,31 +135,51 @@ export default {
   },
 
   methods: {
-    createItem(step) {
-      console.log(this.selectedFrost);
+    isComplete(step) {
+      return this.customstep > step;
+    },
 
+    createItem(step) {
       const customItem = {
-        number: step,
-        frosting: this.selectedFrost.type,
-        batter: this.selectedBat.type
+        number: step < 6 ? step : step,
+        frosting: this.selectedFrost,
+        batter: this.selectedBat
       };
 
       this.customBox.items.push(customItem);
     },
 
-    add(step) {
-      this.createItem(step);
+    removeItem(step, index) {
       this.selectedFrost = "";
       this.selectedBat = "";
 
-      this.customstep = step + 1;
+      if (this.isComplete(step)) {
+        return this.customBox.items.splice(index);
+      }
+    },
+
+    add(step) {
+      const isValid = this.$refs.customForm.validate();
+
+      if (isValid) {
+        this.createItem(step);
+        this.customstep = step + 1;
+        this.selectedFrost = "";
+        this.selectedBat = "";
+        this.$refs.customForm.resetValidation();
+      }
     },
 
     createBox(step) {
-      this.createItem(step);
-      this.$store.dispatch("addToCart", this.customBox);
-      //close dialog
-      //open nav drawer
+      const isValid = this.$refs.customForm.validate();
+
+      if (isValid) {
+        this.createItem(step);
+        this.$store.dispatch("addToCart", this.customBox);
+      }
+
+      this.custom = false;
+      this.$store.dispatch("updateCartState", true);
     }
   }
 };

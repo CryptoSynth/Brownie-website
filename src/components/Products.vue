@@ -80,7 +80,7 @@ export default {
       this.$store.dispatch("addToCart", newItemProp);
 
       if (this.isInCart) this.snackbar = true;
-      //open nav drawer
+      this.$store.dispatch("updateCartState", true);
     }
   },
 
