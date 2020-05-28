@@ -150,11 +150,10 @@ export default {
     },
 
     removeItem(step, index) {
-      this.selectedFrost = "";
-      this.selectedBat = "";
-
       if (this.isComplete(step)) {
-        return this.customBox.items.splice(index);
+        this.selectedFrost = "";
+        this.selectedBat = "";
+        this.customBox.items.splice(index);
       }
     },
 

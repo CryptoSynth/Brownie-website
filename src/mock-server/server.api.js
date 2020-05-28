@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const serverApi = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: 'http://localhost:3000',
   withCredentials: false,
   Accept: 'application/json',
   'Content-Type': 'application/json'
@@ -9,6 +9,6 @@ const serverApi = axios.create({
 
 export default {
   getProducts() {
-    return serverApi.get('/products');
+    return serverApi.get('/api/products');
   }
 };

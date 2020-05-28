@@ -1,6 +1,26 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer width="400px" v-model="updateCartState" app right clipped>
+    <!--User menu and drawer -->
+
+    <v-app-bar v-if="user" app clipped-right>
+      <v-toolbar-title>Brownie Inc.</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <Login />
+      <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
+        <v-badge
+          light
+          offset-y="-7"
+          offset-x="-22"
+          bordered
+          v-if="getCartQuantity !== 0"
+          color="pink accent-3"
+          :content="getCartQuantity"
+        ></v-badge>
+        <v-icon md color="white">mdi-cart-outline</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-navigation-drawer v-if="user" width="400px" v-model="updateCartState" app right clipped>
       <v-list dense rounded>
         <v-list-item v-for="(item, index) in cart" :key="item.id">
           <v-list-item-content>
@@ -27,31 +47,12 @@
       </template>
     </v-navigation-drawer>
 
-    <v-app-bar app clipped-right>
-      <v-toolbar-title>Brownie Inc.</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <Login />
-      <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
-        <v-badge
-          light
-          offset-y="-7"
-          offset-x="-22"
-          bordered
-          v-if="getCartQuantity !== 0"
-          color="pink accent-3"
-          :content="getCartQuantity"
-        ></v-badge>
-        <v-icon md color="white">mdi-cart-outline</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+    <!--Content-->
     <v-content>
-      <v-container fluid>
-        <Landing />
-        <Products :quantity="quantity" :products="products" />
-      </v-container>
+      <router-view></router-view>
     </v-content>
 
+    <!--Footer-->
     <v-footer app>
       <span>&copy; 2020 { Website Footer }</span>
     </v-footer>
@@ -59,8 +60,6 @@
 </template>
 
 <script>
-import Landing from "./components/Landing";
-import Products from "./components/Products";
 import CartItemCard from "./components/CartItemCard";
 import Login from "./components/Login";
 import { mapState, mapGetters } from "vuex";
@@ -69,14 +68,13 @@ export default {
   name: "App",
 
   components: {
-    Landing,
-    Products,
-    CartItemCard,
-    Login
+    Login,
+    CartItemCard
   },
 
   data: () => ({
-    toggleDark: true
+    toggleDark: true,
+    user: false //temp palceholders
   }),
 
   computed: {
