@@ -14,6 +14,24 @@ export default new Vuex.Store({
 
   mutations: {
     SET_PRODUCTS: (state, products) => (state.products = products),
+    CREATE_PRODUCT: (state, product) => state.products.push(product),
+    UPDATE_PRODUCT: (state, payload) => {
+      const product = state.products.find((item) => item.id === payload.id);
+
+      product.image = payload.image ? payload.image : product.image;
+      product.name = payload.name ? payload.name : product.name;
+      product.description = payload.description
+        ? payload.description
+        : product.description;
+      product.price = payload.price ? payload.price : product.price;
+    },
+    DELETE_PRODUCT: (state, id) => {
+      const product = state.products.find((item) => item.id === id);
+
+      const index = state.products.indexOf(product);
+
+      state.products.splice(index, 1);
+    },
     PUSH_TO_CART: (state, item) => state.cart.push(item),
     REMOVE_FROM_CART: (state, index) => state.cart.splice(index, 1),
     INCREMENT_COUNT: (state, index) => (state.cart[index].quantity += 1),
@@ -27,7 +45,34 @@ export default new Vuex.Store({
         const products = await serverAPI.getProducts();
         commit('SET_PRODUCTS', products.data);
       } catch (err) {
-        throw err.response;
+        throw err.response.data;
+      }
+    },
+
+    async createProduct({ commit }, payload) {
+      try {
+        const product = await serverAPI.postProduct(payload);
+        commit('CREATE_PRODUCT', product.data);
+      } catch (err) {
+        throw err.response.data;
+      }
+    },
+
+    async updateProduct({ commit }, payload) {
+      try {
+        const product = await serverAPI.putProduct(payload);
+        commit('UPDATE_PRODUCT', product.data);
+      } catch (err) {
+        throw err.response.data;
+      }
+    },
+
+    async deleteProduct({ commit }, payload) {
+      try {
+        const product = await serverAPI.deleteProduct(payload.id);
+        commit('DELETE_PRODUCT', product.data.id);
+      } catch (err) {
+        throw err.response.data;
       }
     },
 

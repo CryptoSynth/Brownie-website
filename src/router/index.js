@@ -21,14 +21,17 @@ const routes = [
     children: [
       {
         path: 'profile',
+        name: 'profile',
         component: () => import('../views/AdminProfile')
       },
       {
         path: 'products',
+        name: 'products',
         component: () => import('../views/AdminProducts')
       },
       {
         path: 'orders',
+        name: 'orders',
         component: () => import('../views/AdminOrders')
       }
     ]

@@ -2,7 +2,9 @@
   <v-container fluid>
     <v-row justify="center" align="center" no-gutters>
       <v-col class="text-center">
-        <h1 class="display-3 py-3">Admin Home</h1>
+        <v-sheet light>
+          <h1 class="display-3 py-3 text-uppercase">Admin {{$route.name}}</h1>
+        </v-sheet>
         <!--Admin menu and drawer -->
         <v-navigation-drawer app expand-on-hover v-model="admintool" left>
           <v-list>
@@ -12,8 +14,8 @@
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title>Application</v-list-item-title>
-                <v-list-item-subtitle>Subtext</v-list-item-subtitle>
+                <v-list-item-title>Admin User</v-list-item-title>
+                <v-list-item-subtitle>Welcome, Admin User!</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -29,12 +31,11 @@
               </v-list-item-icon>
 
               <v-list-item-content>
-                <v-list-item-title>{{item.title}}</v-list-item-title>
+                <v-list-item-title class="text-left">{{item.title}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-navigation-drawer>
-        <v-divider></v-divider>
       </v-col>
 
       <router-view></router-view>

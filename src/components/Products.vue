@@ -9,7 +9,7 @@
       sm="6"
     >
       <v-card ref="card">
-        <v-img height="350px" src="@/assets/images/box-brownies.jpeg"></v-img>
+        <v-img height="350px" :src="require(`@/assets/images/${product.image}`)"></v-img>
         <v-card-title>{{product.name}}</v-card-title>
         <v-card-subtitle>{{product.description}}</v-card-subtitle>
         <v-card-text>{{product.price | currency}}</v-card-text>
