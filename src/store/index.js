@@ -9,10 +9,15 @@ export default new Vuex.Store({
     products: [],
     cart: [],
     isInCart: false,
-    drawer: false
+    drawer: false,
+    user: ''
   },
 
   mutations: {
+    SET_USER: (state, user) => {
+      state.user = user;
+      localStorage.setItem('user', JSON.stringify(user));
+    },
     SET_PRODUCTS: (state, products) => (state.products = products),
     CREATE_PRODUCT: (state, product) => state.products.push(product),
     UPDATE_PRODUCT: (state, payload) => {
@@ -40,6 +45,25 @@ export default new Vuex.Store({
   },
 
   actions: {
+    async registerUser({ commit }, payload) {
+      try {
+        const user = await serverAPI.postUsers(payload);
+        commit('SET_USER', user.data);
+      } catch (err) {
+        throw err.response.data;
+      }
+    },
+
+    async loginUser({ commit }, payload) {
+      try {
+        let user = await serverAPI.postAuth(payload);
+        commit('SET_USER', user.data);
+        return user.data;
+      } catch (err) {
+        throw err.response.data;
+      }
+    },
+
     async fetchProducts({ commit }) {
       try {
         const products = await serverAPI.getProducts();

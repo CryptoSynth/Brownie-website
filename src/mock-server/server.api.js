@@ -1,23 +1,17 @@
 import axios from 'axios';
 
-const serverApi = axios.create({
-  baseURL: 'http://localhost:3000/api/products',
+let serverApi = axios.create({
+  baseURL: 'http://localhost:3000/api/',
   withCredentials: false,
   Accept: 'application/json',
   'Content-Type': 'application/json'
 });
 
 export default {
-  getProducts() {
-    return serverApi.get('/');
-  },
-  postProduct(product) {
-    return serverApi.post(`/`, product);
-  },
-  putProduct(product) {
-    return serverApi.put(`/${product.id}`, product);
-  },
-  deleteProduct(id) {
-    return serverApi.delete(`/${id}`);
-  }
+  getProducts: () => serverApi.get('products/'),
+  postProduct: (product) => serverApi.post('products/', product),
+  putProduct: (product) => serverApi.put(`products/${product.id}`, product),
+  deleteProduct: (id) => serverApi.delete(`products/${id}`),
+  postUsers: (newuser) => serverApi.post('users/', newuser),
+  postAuth: (user) => serverApi.post('auth/', user)
 };

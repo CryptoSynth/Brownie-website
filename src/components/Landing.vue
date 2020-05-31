@@ -1,6 +1,7 @@
 <template>
   <video-background
     :src="require('@/assets/videos/brownie-rough.mp4')"
+    :muted="false"
     style="height: 84vh; border-radius: 5px"
   >
     <v-row class="fill-height" align="center" no-gutters>

@@ -12,8 +12,9 @@
         <v-container fluid>
           <v-row align="center" justify="center" no-gutters>
             <v-col>
-              <v-form>
+              <v-form ref="loginForm">
                 <v-text-field
+                  :rules="emailRule"
                   v-model="email"
                   type="text"
                   color="purple accent-3"
@@ -21,6 +22,7 @@
                   label="Email"
                 ></v-text-field>
                 <v-text-field
+                  :rules="passwordRule"
                   v-model="password"
                   type="password"
                   color="purple accent-3"
@@ -35,20 +37,51 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="purple accent-3" text @click="login = false">Login</v-btn>
+        <v-btn color="purple accent-3" text @click="loginUser">Login</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import jwt from "jsonwebtoken";
+
 export default {
   data() {
     return {
-      login: false,
       email: "",
-      password: ""
+      password: "",
+      login: false,
+      emailRule: [v => !!v || "Email is required!"],
+      passwordRule: [v => !!v || "Password is required!"]
     };
+  },
+
+  methods: {
+    async loginUser() {
+      const isValid = this.$refs.loginForm.validate();
+
+      if (isValid) {
+        try {
+          const user = {
+            account: {
+              email: this.email,
+              password: this.password
+            }
+          };
+
+          const authUser = await this.$store.dispatch("loginUser", user);
+
+          if (authUser.isAdmin) {
+            return this.$router.push("admin-account/");
+          }
+
+          this.login = false;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
   }
 };
 </script>
