@@ -52,6 +52,10 @@
       </v-card-text>
 
       <v-card-actions>
+        <span class="font-weight-thin" style="font-size: .7rem">
+          Already have an account?
+          <v-btn class="ml-2" x-small color="blue" text>Login</v-btn>
+        </span>
         <v-spacer></v-spacer>
         <v-btn color="pink accent-3" text @click="registerUser">Create Account</v-btn>
       </v-card-actions>
@@ -61,6 +65,7 @@
 
 <script>
 export default {
+  name: "home-signup",
   data() {
     return {
       signup: false,
@@ -87,9 +92,7 @@ export default {
               lastName: this.last,
               email: this.email,
               password: this.password
-            },
-            orders: [],
-            isAdmin: false
+            }
           };
 
           this.$store.dispatch("registerUser", newuser);

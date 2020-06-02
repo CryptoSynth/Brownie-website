@@ -18,6 +18,10 @@ export default new Vuex.Store({
       state.user = user;
       localStorage.setItem('user', JSON.stringify(user));
     },
+    CLEAR_USER: () => {
+      localStorage.removeItem('user');
+      location.reload();
+    },
     SET_PRODUCTS: (state, products) => (state.products = products),
     CREATE_PRODUCT: (state, product) => state.products.push(product),
     UPDATE_PRODUCT: (state, payload) => {
@@ -62,6 +66,10 @@ export default new Vuex.Store({
       } catch (err) {
         throw err.response.data;
       }
+    },
+
+    logout({ commit }) {
+      commit('CLEAR_USER');
     },
 
     async fetchProducts({ commit }) {
@@ -128,7 +136,9 @@ export default new Vuex.Store({
   },
 
   getters: {
-    getCartQuantity: (state) => state.cart.length
+    getCartQuantity: (state) => state.cart.length,
+    loggedIn: (state) => !!state.user,
+    getUser: (state) => state.user
   },
 
   modules: {}

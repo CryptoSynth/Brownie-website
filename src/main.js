@@ -14,6 +14,13 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
+  created() {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const loggedInUser = JSON.parse(user);
+      this.$store.commit('SET_USER', loggedInUser);
+    }
+  },
   vuetify,
   render: (h) => h(App)
 }).$mount('#app');

@@ -5,7 +5,8 @@
     <v-app-bar app clipped-right>
       <v-toolbar-title>Brownie Inc.</v-toolbar-title>
       <v-spacer></v-spacer>
-      <Login />
+      <HomeLogin v-if="!loggedIn" />
+      <v-btn class="mr-10" text width="100" color="purple accent-3" v-else @click="logout">Logout</v-btn>
       <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
         <v-badge
           light
@@ -46,16 +47,16 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <Landing />
-    <Products :quantity="quantity" :products="products" />
+    <HomeLanding :loggedIn="loggedIn" />
+    <HomeProducts :quantity="quantity" :products="products" />
   </v-container>
 </template>
 
 <script>
-import Landing from "../components/Landing";
-import Products from "../components/Products";
+import HomeLanding from "../components/HomeLanding";
+import HomeProducts from "../components/HomeProducts";
+import HomeLogin from "../components/HomeLogin";
 import CartItemCard from "../components/CartItemCard";
-import Login from "../components/Login";
 import { mapState, mapGetters } from "vuex";
 
 export default {
@@ -68,15 +69,21 @@ export default {
   },
 
   components: {
-    Landing,
-    Products,
-    Login,
+    HomeLanding,
+    HomeProducts,
+    HomeLogin,
     CartItemCard
+  },
+
+  methods: {
+    logout() {
+      this.$store.dispatch("logout");
+    }
   },
 
   computed: {
     ...mapState(["products", "cart", "quantity", "drawer"]),
-    ...mapGetters(["getCartQuantity"]),
+    ...mapGetters(["getCartQuantity", "loggedIn"]),
 
     total() {
       let totalItemPrice = 0;
@@ -97,16 +104,6 @@ export default {
       set(isOpen) {
         this.$store.dispatch("updateCartState", isOpen);
       }
-    }
-  },
-
-  async created() {
-    this.$vuetify.theme.dark = this.toggleDark;
-
-    try {
-      await this.$store.dispatch("fetchProducts");
-    } catch (err) {
-      console.log(err);
     }
   }
 };

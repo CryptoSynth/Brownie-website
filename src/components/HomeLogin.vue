@@ -36,6 +36,10 @@
       </v-card-text>
 
       <v-card-actions>
+        <span class="font-weight-thin" style="font-size: .7rem">
+          Dont have an account?
+          <v-btn class="ml-2" x-small color="blue" text>Sign Up</v-btn>
+        </span>
         <v-spacer></v-spacer>
         <v-btn color="purple accent-3" text @click="loginUser">Login</v-btn>
       </v-card-actions>
@@ -44,9 +48,9 @@
 </template>
 
 <script>
-import jwt from "jsonwebtoken";
-
 export default {
+  name: "home-login",
+
   data() {
     return {
       email: "",

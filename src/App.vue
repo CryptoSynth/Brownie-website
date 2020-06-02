@@ -18,6 +18,11 @@ export default {
 
   data: () => ({
     toggleDark: true
-  })
+  }),
+
+  created() {
+    this.$vuetify.theme.dark = this.toggleDark;
+    this.$store.dispatch("fetchProducts");
+  }
 };
 </script>
