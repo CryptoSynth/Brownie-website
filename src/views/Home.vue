@@ -43,7 +43,7 @@
 
       <template v-slot:append>
         <div class="py-2 px-6">
-          <v-btn color="purple accent-3" block>Checkout</v-btn>
+          <v-btn color="purple accent-3" block @click="checkout">Checkout</v-btn>
         </div>
       </template>
     </v-navigation-drawer>
@@ -78,6 +78,10 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch("logout");
+    },
+
+    checkout() {
+      this.$router.push("/checkout");
     }
   },
 

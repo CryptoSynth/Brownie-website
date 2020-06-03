@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+// import axios from 'axios';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,12 @@ const routes = [
         component: () => import('../components/HomeSignUp')
       }
     ]
+  },
+
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: () => import('../views/Checkout')
   },
 
   {
@@ -63,9 +70,21 @@ router.beforeEach((to, from, next) => {
   let user = localStorage.getItem('user');
   user = JSON.parse(user);
 
-  if (to.matched.some((record) => record.meta.isAdmin && !user.isAdmin)) {
+  if (
+    to.matched.some((record) => record.meta.isAdmin && (!user || !user.isAdmin))
+  ) {
     return next({ path: '/' });
   }
+
+  // axios.interceptors.response.use(
+  //   (response) => response,
+  //   (error) => {
+  //     if (error.response.status === 401) {
+  //       this.$store.dispatch('logout');
+  //     }
+  //     return Promise.reject(error);
+  //   }
+  // );
 
   next();
 });

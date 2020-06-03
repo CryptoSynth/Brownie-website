@@ -4,7 +4,7 @@
       <v-row align="center" justify="center" no-gutters>
         <v-col class="text-center" cols="4">
           <v-avatar style="border-radius: 5px; border: 2px solid black" tile size="100">
-            <v-img class="overlay" cover src="@/assets/images/box-brownies.jpeg"></v-img>
+            <v-img class="overlay" cover :src="require(`@/assets/images/${item.image}`)"></v-img>
           </v-avatar>
         </v-col>
         <v-col cols="8">

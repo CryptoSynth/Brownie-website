@@ -65,12 +65,13 @@ export default {
 
   methods: {
     addToCart(item) {
-      const { id, name, description, price } = item;
+      const { id, name, description, price, image } = item;
 
       this.name = name;
 
       let newItemProp = {
         id,
+        image,
         name,
         description,
         price,

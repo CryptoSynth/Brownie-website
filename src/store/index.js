@@ -41,7 +41,9 @@ export default new Vuex.Store({
 
       state.products.splice(index, 1);
     },
-    PUSH_TO_CART: (state, item) => state.cart.push(item),
+    PUSH_TO_CART: (state, item) => {
+      state.cart.push(item);
+    },
     REMOVE_FROM_CART: (state, index) => state.cart.splice(index, 1),
     INCREMENT_COUNT: (state, index) => (state.cart[index].quantity += 1),
     DECREMENT_COUNT: (state, index) => (state.cart[index].quantity -= 1),
