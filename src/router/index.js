@@ -26,7 +26,14 @@ const routes = [
   {
     path: '/checkout',
     name: 'checkout',
-    component: () => import('../views/Checkout')
+    component: () => import('../views/Checkout'),
+    children: [
+      {
+        path: 'successful-payment',
+        name: 'successful-payment',
+        component: () => import('../views/ThankYou')
+      }
+    ]
   },
 
   {
@@ -57,6 +64,15 @@ const routes = [
         component: () => import('../views/AdminOrders')
       }
     ]
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: () => import('../views/NotFound')
+  },
+  {
+    path: '*',
+    redirect: { name: '404' }
   }
 ];
 

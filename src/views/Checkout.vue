@@ -1,132 +1,135 @@
 <template>
-  <v-container fluid>
-    <v-row align="center" justify="space-around" no-gutters>
-      <v-col class="text-center" cols="7">
-        <v-sheet height="620" color="transparent">
-          Cart Items
-          <v-row>
-            <v-col cols="12" v-for="item in cart" :key="item.id">
-              <v-sheet light height="100">
-                <v-row align="center" justify="center">
-                  <v-col>
-                    <v-avatar size="80" tile>
-                      <v-img :src="require(`@/assets/images/${item.image}`)"></v-img>
-                    </v-avatar>
+  <div>
+    <v-container fluid>
+      <router-view v-if="success"></router-view>
+      <v-row v-else align="center" justify="space-around" no-gutters>
+        <v-col class="text-center" cols="7">
+          <v-sheet height="620" color="transparent">
+            Cart Items
+            <v-row>
+              <v-col cols="12" v-for="item in cart" :key="item.id">
+                <v-sheet light height="100">
+                  <v-row align="center" justify="center">
+                    <v-col>
+                      <v-avatar size="80" tile>
+                        <v-img :src="require(`@/assets/images/${item.image}`)"></v-img>
+                      </v-avatar>
+                    </v-col>
+                    <v-col>
+                      <p>NAME: {{item.name}}</p>
+                    </v-col>
+                    <v-col>
+                      <p>PRICE: {{item.price}}</p>
+                    </v-col>
+                    <v-col>
+                      <p>QUANTITY: {{item.quantity}}</p>
+                    </v-col>
+                  </v-row>
+                </v-sheet>
+              </v-col>
+            </v-row>
+          </v-sheet>
+        </v-col>
+        <v-col class="text-center" cols="4">
+          <v-sheet height="auto" color="blue pa-2">
+            Pay Here
+            <v-form ref="paymentForm">
+              <v-container fluid>
+                <v-row align="center" justify="space-around">
+                  <v-col cols="12">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="firstNameRule"
+                      v-model="firstName"
+                      type="text"
+                      light
+                      solo
+                      label="First Name"
+                    ></v-text-field>
                   </v-col>
-                  <v-col>
-                    <p>NAME: {{item.name}}</p>
+                  <v-col cols="12">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="lastNameRule"
+                      v-model="lastName"
+                      type="text"
+                      light
+                      solo
+                      label="Last Name"
+                    ></v-text-field>
                   </v-col>
-                  <v-col>
-                    <p>PRICE: {{item.price}}</p>
+                  <v-col cols="9">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="cardNumRule"
+                      v-model="cardNum"
+                      v-mask="'####-####-####-####'"
+                      type="text"
+                      light
+                      solo
+                      label="####-####-####-####"
+                    ></v-text-field>
                   </v-col>
-                  <v-col>
-                    <p>QUANTITY: {{item.quantity}}</p>
+                  <v-col cols="3">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="cardCsvRule"
+                      v-model="cardCsv"
+                      v-mask="'####'"
+                      type="text"
+                      light
+                      solo
+                      label="CSV"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="cardMonthRule"
+                      v-model="cardMonth"
+                      v-mask="'##'"
+                      type="text"
+                      light
+                      solo
+                      label="Month"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      hide-details="auto"
+                      :rules="cardYearRule"
+                      v-model="cardYear"
+                      v-mask="'####'"
+                      type="text"
+                      light
+                      solo
+                      label="Year"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-checkbox
+                      hide-details="auto"
+                      color="green accent-3"
+                      label="Accept Terms Conditions & Privacy Policy"
+                    ></v-checkbox>
+                    <v-checkbox
+                      hide-details="auto"
+                      color="green accent-3"
+                      label="Subscribe To Email Notifications"
+                    ></v-checkbox>
+                  </v-col>
+                  <v-col class="text-center">
+                    <v-btn block color="red accent-3" @click="order">Place Order</v-btn>
                   </v-col>
                 </v-row>
-              </v-sheet>
-            </v-col>
-          </v-row>
-        </v-sheet>
-      </v-col>
-      <v-col class="text-center" cols="4">
-        <v-sheet height="auto" color="blue pa-2">
-          Pay Here
-          <v-form ref="paymentForm">
-            <v-container fluid>
-              <v-row align="center" justify="space-around">
-                <v-col cols="12">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="firstNameRule"
-                    v-model="firstName"
-                    type="text"
-                    light
-                    solo
-                    label="First Name"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="lastNameRule"
-                    v-model="lastName"
-                    type="text"
-                    light
-                    solo
-                    label="Last Name"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="9">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="cardNumRule"
-                    v-model="cardNum"
-                    v-mask="'####-####-####-####'"
-                    type="text"
-                    light
-                    solo
-                    label="####-####-####-####"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="3">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="cardCsvRule"
-                    v-model="cardCsv"
-                    v-mask="'####'"
-                    type="text"
-                    light
-                    solo
-                    label="CSV"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="cardMonthRule"
-                    v-model="cardMonth"
-                    v-mask="'##'"
-                    type="text"
-                    light
-                    solo
-                    label="Month"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field
-                    hide-details="auto"
-                    :rules="cardYearRule"
-                    v-model="cardYear"
-                    v-mask="'####'"
-                    type="text"
-                    light
-                    solo
-                    label="Year"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-checkbox
-                    hide-details="auto"
-                    color="green accent-3"
-                    label="Accept Terms Conditions & Privacy Policy"
-                  ></v-checkbox>
-                  <v-checkbox
-                    hide-details="auto"
-                    color="green accent-3"
-                    label="Subscribe To Email Notifications"
-                  ></v-checkbox>
-                </v-col>
-                <v-col class="text-center">
-                  <v-btn block color="red accent-3" @click="order">Place Order</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-sheet>
-      </v-col>
-    </v-row>
-    <v-snackbar :timeout="3000" v-model="transStatus" bottom color="red accent-3">{{response}}</v-snackbar>
-  </v-container>
+              </v-container>
+            </v-form>
+          </v-sheet>
+        </v-col>
+      </v-row>
+      <v-snackbar :timeout="3000" v-model="transStatus" bottom color="red accent-3">{{response}}</v-snackbar>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -151,12 +154,13 @@ export default {
       cardMonthRule: [v => !!v || "Card month is required."],
       cardYearRule: [v => !!v || "Card year is required."],
       transStatus: false,
-      response: ""
+      response: "",
+      success: false
     };
   },
 
   methods: {
-    async paymentFormUpdate(opaqueData) {
+    paymentFormUpdate(opaqueData) {
       this.firstName = "";
       this.lastName = "";
       this.cardNum = "";
@@ -174,12 +178,14 @@ export default {
           dataValue: opaqueData.dataValue
         })
         .then(res => {
-          console.log(res);
-          this.response = res;
-          this.transStatus = true;
+          if (res.data != null) {
+            this.success = true;
+            this.$router.push("/checkout/successful-payment");
+          }
         })
         .catch(err => {
-          console.log(err);
+          this.response = err.response.data.transErrText;
+          this.transStatus = true;
         });
     },
 
@@ -214,6 +220,10 @@ export default {
         authData,
         cardData
       };
+
+      console.log(authData);
+      console.log(cardData);
+      console.log(secureData);
 
       const isValid = this.$refs.paymentForm.validate();
 
