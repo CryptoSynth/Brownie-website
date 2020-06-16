@@ -1,8 +1,5 @@
 <template>
-  <v-dialog v-model="login" max-width="500px">
-    <template v-slot:activator="{ on }">
-      <v-btn text width="100" class="mr-10" color="purple accent-3" v-on="on">Login</v-btn>
-    </template>
+  <v-dialog persistent v-model="login" max-width="500px">
     <v-card>
       <v-card-title>
         <span class="headline">Login</span>
@@ -38,10 +35,11 @@
       <v-card-actions>
         <span class="font-weight-thin" style="font-size: .7rem">
           Dont have an account?
-          <v-btn class="ml-2" x-small color="blue" text>Sign Up</v-btn>
+          <v-btn class="ml-2" x-small color="blue" text @click.stop="redirectSignUp">Sign Up</v-btn>
         </span>
         <v-spacer></v-spacer>
-        <v-btn color="purple accent-3" text @click="loginUser">Login</v-btn>
+        <v-btn color="red accent-3 mr-3" text @click="close">Close</v-btn>
+        <v-btn color="purple accent-3" @click="loginUser">Login</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -55,13 +53,23 @@ export default {
     return {
       email: "",
       password: "",
-      login: false,
+      login: true,
       emailRule: [v => !!v || "Email is required!"],
       passwordRule: [v => !!v || "Password is required!"]
     };
   },
 
   methods: {
+    redirectSignUp() {
+      this.login = false;
+      this.$router.push("signup");
+    },
+
+    close() {
+      this.login = false;
+      this.$router.push("/");
+    },
+
     async loginUser() {
       const isValid = this.$refs.loginForm.validate();
 

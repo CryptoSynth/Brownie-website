@@ -1,7 +1,6 @@
 <template>
   <video-background
     :src="require('@/assets/videos/brownie-rough.mp4')"
-    :muted="false"
     style="height: 84vh; border-radius: 5px"
   >
     <v-row class="fill-height" align="center" no-gutters>
@@ -15,7 +14,14 @@
           <h1 class="display-3">Company Title</h1>
           <h1 class="display-1">Company Moto</h1>
           <p>ELorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-          <HomeSignUp v-if="!loggedIn" />
+          <v-btn
+            v-if="!loggedIn"
+            width="200"
+            outlined
+            light
+            color="pink accent-3"
+            to="signup"
+          >Sign Up</v-btn>
         </v-sheet>
       </v-col>
     </v-row>
@@ -23,16 +29,10 @@
 </template>
 
 <script>
-import HomeSignUp from "../components/HomeSignUp";
-
 export default {
   name: "home-landing",
 
-  props: ["loggedIn"],
-
-  components: {
-    HomeSignUp
-  }
+  props: ["loggedIn"]
 };
 </script>
 

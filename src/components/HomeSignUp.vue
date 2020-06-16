@@ -1,8 +1,5 @@
 <template>
-  <v-dialog v-model="signup" max-width="500px">
-    <template v-slot:activator="{ on }">
-      <v-btn width="200" outlined light color="pink accent-3" v-on="on">Sign Up</v-btn>
-    </template>
+  <v-dialog persistent v-model="signup" max-width="500px">
     <v-card>
       <v-card-title>
         <span class="headline">Sign Up</span>
@@ -54,10 +51,11 @@
       <v-card-actions>
         <span class="font-weight-thin" style="font-size: .7rem">
           Already have an account?
-          <v-btn class="ml-2" x-small color="blue" text>Login</v-btn>
+          <v-btn class="ml-2" x-small color="blue" text @click.stop="redirectLogin">Login</v-btn>
         </span>
         <v-spacer></v-spacer>
-        <v-btn color="pink accent-3" text @click="registerUser">Create Account</v-btn>
+        <v-btn color="red accent-3 mr-3" text @click="close">Close</v-btn>
+        <v-btn color="pink accent-3" @click="registerUser">Create Account</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -68,7 +66,7 @@ export default {
   name: "home-signup",
   data() {
     return {
-      signup: false,
+      signup: true,
       first: "",
       last: "",
       email: "",
@@ -81,6 +79,15 @@ export default {
   },
 
   methods: {
+    redirectLogin() {
+      this.signup = false;
+      this.$router.push("login");
+    },
+
+    async close() {
+      this.$router.push("/");
+    },
+
     async registerUser() {
       const isValid = this.$refs.registerForm.validate();
 

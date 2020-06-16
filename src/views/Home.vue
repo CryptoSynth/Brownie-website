@@ -5,7 +5,14 @@
     <v-app-bar app clipped-right>
       <v-toolbar-title>Brownie Inc.</v-toolbar-title>
       <v-spacer></v-spacer>
-      <HomeLogin v-if="!loggedIn" />
+      <v-btn
+        v-if="!loggedIn"
+        text
+        width="100"
+        class="mr-10"
+        color="purple accent-3"
+        to="login"
+      >Login</v-btn>
       <v-btn class="mr-10" text width="100" color="purple accent-3" v-else @click="logout">Logout</v-btn>
       <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
         <v-badge
@@ -45,8 +52,22 @@
         <div class="py-2 px-6">
           <v-btn color="purple accent-3" block @click="checkout">Checkout</v-btn>
         </div>
+        <v-snackbar
+          v-model="isCartEmpty"
+          color="red"
+          :timeout="timeout"
+          class="text-center"
+        >Cart is empty! Please add a product.</v-snackbar>
+        <v-snackbar v-model="isNotLoggedIn" color="red" :timeout="timeout" class="text-center">
+          <span>
+            Please
+            <router-link to="login">Login</router-link>
+          </span>
+        </v-snackbar>
       </template>
     </v-navigation-drawer>
+
+    <router-view></router-view>
     <HomeLanding :loggedIn="loggedIn" />
     <HomeProducts :quantity="quantity" :products="products" />
   </v-container>
@@ -55,7 +76,6 @@
 <script>
 import HomeLanding from "../components/HomeLanding";
 import HomeProducts from "../components/HomeProducts";
-import HomeLogin from "../components/HomeLogin";
 import CartItemCard from "../components/CartItemCard";
 import { mapState, mapGetters } from "vuex";
 
@@ -64,14 +84,16 @@ export default {
 
   data() {
     return {
-      toggleDark: true
+      toggleDark: true,
+      timeout: 2000,
+      isCartEmpty: false,
+      isNotLoggedIn: false
     };
   },
 
   components: {
     HomeLanding,
     HomeProducts,
-    HomeLogin,
     CartItemCard
   },
 
@@ -81,6 +103,10 @@ export default {
     },
 
     checkout() {
+      if (this.cart.length === 0) return (this.isCartEmpty = true);
+
+      if (!this.loggedIn) return (this.isNotLoggedIn = true);
+
       this.$router.push("/checkout");
     }
   },
