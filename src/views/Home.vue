@@ -40,7 +40,7 @@
             <v-sheet height="100">
               <v-container class="fill-height" fluid>
                 <v-row justify="center" align="center">
-                  <h1 class="text-uppercase">total: {{total | currency}}</h1>
+                  <h1 class="text-uppercase">total: {{getTotalPrice | currency}}</h1>
                 </v-row>
               </v-container>
             </v-sheet>
@@ -58,12 +58,6 @@
           :timeout="timeout"
           class="text-center"
         >Cart is empty! Please add a product.</v-snackbar>
-        <v-snackbar v-model="isNotLoggedIn" color="red" :timeout="timeout" class="text-center">
-          <span>
-            Please
-            <router-link to="login">Login</router-link>
-          </span>
-        </v-snackbar>
       </template>
     </v-navigation-drawer>
 
@@ -86,8 +80,7 @@ export default {
     return {
       toggleDark: true,
       timeout: 2000,
-      isCartEmpty: false,
-      isNotLoggedIn: false
+      isCartEmpty: false
     };
   },
 
@@ -105,27 +98,14 @@ export default {
     checkout() {
       if (this.cart.length === 0) return (this.isCartEmpty = true);
 
-      if (!this.loggedIn) return (this.isNotLoggedIn = true);
-
+      this.$store.dispatch("createCart");
       this.$router.push("/checkout");
     }
   },
 
   computed: {
     ...mapState(["products", "cart", "quantity", "drawer"]),
-    ...mapGetters(["getCartQuantity", "loggedIn"]),
-
-    total() {
-      let totalItemPrice = 0;
-
-      if (this.cart.length === 0) return (totalItemPrice = 0);
-
-      this.cart.forEach(item => {
-        totalItemPrice = totalItemPrice + item.price * item.quantity;
-      });
-
-      return totalItemPrice;
-    },
+    ...mapGetters(["getCartQuantity", "loggedIn", "getTotalPrice"]),
 
     updateCartState: {
       get() {

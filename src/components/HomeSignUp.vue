@@ -92,17 +92,17 @@ export default {
       const isValid = this.$refs.registerForm.validate();
 
       if (isValid) {
-        try {
-          const newuser = {
-            account: {
-              firstName: this.first,
-              lastName: this.last,
-              email: this.email,
-              password: this.password
-            }
-          };
+        const newuser = {
+          account: {
+            firstName: this.first,
+            lastName: this.last,
+            email: this.email,
+            password: this.password
+          }
+        };
 
-          this.$store.dispatch("registerUser", newuser);
+        try {
+          await this.$store.dispatch("registerUser", newuser);
         } catch (err) {
           console.log(err);
         }

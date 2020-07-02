@@ -10,10 +10,15 @@ export default new Vuex.Store({
     cart: [],
     isInCart: false,
     drawer: false,
-    user: ''
+    user: '',
+    orders: []
   },
 
   mutations: {
+    SET_ORDERS: (state, orders) => {
+      state.orders = orders;
+    },
+
     SET_USER: (state, user) => {
       state.user = user;
       localStorage.setItem('user', JSON.stringify(user));
@@ -21,6 +26,9 @@ export default new Vuex.Store({
     CLEAR_USER: () => {
       localStorage.removeItem('user');
       location.reload();
+    },
+    SET_CART: (state) => {
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     },
     SET_PRODUCTS: (state, products) => (state.products = products),
     CREATE_PRODUCT: (state, product) => state.products.push(product),
@@ -51,6 +59,15 @@ export default new Vuex.Store({
   },
 
   actions: {
+    async fetchOrders({ commit }) {
+      try {
+        const orders = await serverAPI.getOrders();
+        commit('SET_ORDERS', orders.data);
+      } catch (err) {
+        err.response.data;
+      }
+    },
+
     async registerUser({ commit }, payload) {
       try {
         const user = await serverAPI.postUsers(payload);
@@ -70,10 +87,6 @@ export default new Vuex.Store({
       }
     },
 
-    logout({ commit }) {
-      commit('CLEAR_USER');
-    },
-
     async fetchProducts({ commit }) {
       try {
         const products = await serverAPI.getProducts();
@@ -82,6 +95,18 @@ export default new Vuex.Store({
         throw err.response.data;
       }
     },
+
+    // async createCheckout(payload) {
+    //   console.log(payload);
+
+    //   try {
+    //     const checkoutRes = await serverAPI.postCheckouts(payload);
+
+    //     return checkoutRes.data;
+    //   } catch (err) {
+    //     throw err.response.data;
+    //   }
+    // },
 
     async createProduct({ commit }, payload) {
       try {
@@ -110,6 +135,10 @@ export default new Vuex.Store({
       }
     },
 
+    createCart({ commit }) {
+      commit('SET_CART');
+    },
+
     addToCart({ commit, state }, item) {
       if (state.cart.length === 0) return commit('PUSH_TO_CART', item);
 
@@ -134,13 +163,26 @@ export default new Vuex.Store({
 
     updateCartState({ commit }, isOpen) {
       commit('UPDATE_CART_STATE', isOpen);
+    },
+
+    logout({ commit }) {
+      commit('CLEAR_USER');
     }
   },
 
   getters: {
     getCartQuantity: (state) => state.cart.length,
     loggedIn: (state) => !!state.user,
-    getUser: (state) => state.user
+    getUser: (state) => state.user,
+    getTotalPrice: (state) => {
+      let totalItemPrice = 0;
+
+      state.cart.forEach((item) => {
+        totalItemPrice = totalItemPrice + item.price * item.quantity;
+      });
+
+      return totalItemPrice;
+    }
   },
 
   modules: {}

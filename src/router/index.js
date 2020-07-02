@@ -29,8 +29,9 @@ const routes = [
     component: () => import('../views/Checkout'),
     children: [
       {
-        path: 'successful-payment',
+        path: 'successful-payment/:orderId',
         name: 'successful-payment',
+        props: true,
         component: () => import('../views/ThankYou')
       }
     ]

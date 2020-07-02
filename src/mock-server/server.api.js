@@ -13,5 +13,8 @@ export default {
   putProduct: (product) => serverApi.put(`products/${product.id}`, product),
   deleteProduct: (id) => serverApi.delete(`products/${id}`),
   postUsers: (newuser) => serverApi.post('users/', newuser),
-  postAuth: (user) => serverApi.post('auth/', user)
+  postAuth: (user) => serverApi.post('auth/', user),
+  postCheckouts: (transaction) => serverApi.post('checkouts/', transaction),
+  getOrders: () => serverApi.get('orders/'),
+  getOrder: (orderId) => serverApi.get(`orders/${orderId}`)
 };
