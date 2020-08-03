@@ -20,9 +20,14 @@ export default {
     toggleDark: true
   }),
 
-  created() {
+  async mounted() {
     this.$vuetify.theme.dark = this.toggleDark;
-    this.$store.dispatch("fetchProducts");
+
+    try {
+      this.$store.dispatch("product/getProducts");
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 </script>

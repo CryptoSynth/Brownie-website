@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import axios from 'axios';
+import serverAPI from '../mock-server/server.api';
+import * as user from '../store/modules/user';
 
 Vue.use(VueRouter);
 
@@ -40,29 +41,46 @@ const routes = [
   {
     path: '/user-account',
     name: 'user',
-    component: () => import('../views/User')
+    component: () => import('../views/User'),
+    children: [
+      {
+        path: 'profile',
+        name: 'user-profile',
+        component: () => import('../views/UserProfile')
+      },
+      {
+        path: 'orders',
+        name: 'user-orders',
+        component: () => import('../views/UserOrders')
+      }
+    ]
   },
 
   {
     path: '/admin-account',
     name: 'admin',
     component: () => import('../views/Admin'),
-    meta: { isAdmin: true },
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'profile',
-        name: 'profile',
+        name: 'admin-profile',
         component: () => import('../views/AdminProfile')
       },
       {
         path: 'products',
-        name: 'products',
+        name: 'admin-products',
         component: () => import('../views/AdminProducts')
       },
       {
         path: 'orders',
-        name: 'orders',
+        name: 'admin-orders',
         component: () => import('../views/AdminOrders')
+      },
+      {
+        path: 'shipped',
+        name: 'admin-shipped-orders',
+        component: () => import('../views/AdminShippedOrders')
       }
     ]
   },
@@ -83,17 +101,32 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  let user = localStorage.getItem('user');
-  user = JSON.parse(user);
+router.beforeEach(async (to, from, next) => {
+  const token = user.getters.getToken();
+  const isRequired = to.matched.some((record) => record.meta.requiresAuth);
 
-  if (
-    to.matched.some((record) => record.meta.isAdmin && (!user || !user.isAdmin))
-  ) {
-    return next({ path: '/' });
+  //token is valid and authorization is required
+  if (isRequired) {
+    if (token) {
+      try {
+        const isAuth = await serverAPI.authenticate(token);
+        if (isAuth.data.isAdmin) {
+          next();
+        }
+      } catch (err) {
+        if (err.response.data.isNotAdmin || err.response.data) {
+          next('/user-account');
+        }
+      }
+    } else {
+      console.log('Access Denied. No Token provided.');
+      next('/');
+    }
+  } else {
+    next();
   }
 
-  // axios.interceptors.response.use(
+  // serverApi.interceptors.response.use(
   //   (response) => response,
   //   (error) => {
   //     if (error.response.status === 401) {
@@ -102,8 +135,6 @@ router.beforeEach((to, from, next) => {
   //     return Promise.reject(error);
   //   }
   // );
-
-  next();
 });
 
 export default router;

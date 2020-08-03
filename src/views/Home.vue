@@ -13,7 +13,10 @@
         color="purple accent-3"
         to="login"
       >Login</v-btn>
-      <v-btn class="mr-10" text width="100" color="purple accent-3" v-else @click="logout">Logout</v-btn>
+      <div v-else>
+        <v-btn outlined class="mr-5" color="purple accent-3" @click="goToAccount">My Account</v-btn>
+        <v-btn class="mr-10" text width="100" color="purple accent-3" @click="logout">Logout</v-btn>
+      </div>
       <v-btn shapped md color="purple accent-3" @click.stop="updateCartState = !updateCartState">
         <v-badge
           light
@@ -50,7 +53,7 @@
 
       <template v-slot:append>
         <div class="py-2 px-6">
-          <v-btn color="purple accent-3" block @click="checkout">Checkout</v-btn>
+          <v-btn color="purple accent-3" block @click="goToCheckout">Checkout</v-btn>
         </div>
         <v-snackbar
           v-model="isCartEmpty"
@@ -63,7 +66,7 @@
 
     <router-view></router-view>
     <HomeLanding :loggedIn="loggedIn" />
-    <HomeProducts :quantity="quantity" :products="products" />
+    <HomeProducts :quantity="quantity" :products="product.products" />
   </v-container>
 </template>
 
@@ -71,6 +74,7 @@
 import HomeLanding from "../components/HomeLanding";
 import HomeProducts from "../components/HomeProducts";
 import CartItemCard from "../components/CartItemCard";
+import serverAPI from "../mock-server/server.api";
 import { mapState, mapGetters } from "vuex";
 
 export default {
@@ -92,20 +96,45 @@ export default {
 
   methods: {
     logout() {
-      this.$store.dispatch("logout");
+      this.$store.dispatch("user/logout");
     },
 
-    checkout() {
+    goToCheckout() {
       if (this.cart.length === 0) return (this.isCartEmpty = true);
 
       this.$store.dispatch("createCart");
       this.$router.push("/checkout");
+    },
+
+    async goToAccount() {
+      const token = this.getToken;
+
+      try {
+        const isAuth = await serverAPI.authenticate(token);
+
+        if (isAuth.data.isAdmin) return this.$router.push("/admin-account");
+      } catch (err) {
+        if (err.response.data.isNotAdmin)
+          return this.$router.push("/user-account");
+      }
     }
   },
 
   computed: {
-    ...mapState(["products", "cart", "quantity", "drawer"]),
-    ...mapGetters(["getCartQuantity", "loggedIn", "getTotalPrice"]),
+    ...mapState(["product", "cart", "quantity", "drawer"]),
+    ...mapGetters(["getCartQuantity", "getTotalPrice"]),
+
+    getUser() {
+      return this.$store.getters["user/getUser"];
+    },
+
+    loggedIn() {
+      return this.$store.getters["user/loggedIn"];
+    },
+
+    getToken() {
+      return this.$store.getters["user/getToken"];
+    },
 
     updateCartState: {
       get() {

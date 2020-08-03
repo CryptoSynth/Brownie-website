@@ -16,11 +16,12 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
+
+  //automatic login
   created() {
-    const user = localStorage.getItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
-      const loggedInUser = JSON.parse(user);
-      this.$store.commit('SET_USER', loggedInUser);
+      this.$store.commit('user/SET_USER', user);
     }
   },
   vuetify,

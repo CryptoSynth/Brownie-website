@@ -82,13 +82,10 @@ export default {
             }
           };
 
-          const authUser = await this.$store.dispatch("loginUser", user);
-
-          if (authUser.isAdmin) {
-            return this.$router.push("admin-account/");
-          }
+          await this.$store.dispatch("user/loginUser", user);
 
           this.login = false;
+          this.$router.push("/");
         } catch (err) {
           console.log(err);
         }

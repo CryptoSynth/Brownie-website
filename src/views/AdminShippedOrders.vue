@@ -88,7 +88,7 @@ import { mapState } from "vuex";
 import AdminFullfillmentButton from "../components/AdminFullfillmentButton";
 
 export default {
-  name: "orders",
+  name: "shipped-orders",
 
   components: {
     AdminFullfillmentButton
@@ -119,11 +119,7 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      order: state => state.order.order_list,
-      shipping: state => state.order.shipping_list,
-      tracking: state => state.order.tracking_list
-    }),
+    ...mapState(["orders_list", "shipping_list", "tracking_list"]),
 
     isLoading() {
       if (this.shipping_list.length === 0 && this.tracking_list.length === 0)

@@ -131,7 +131,7 @@
                 <v-col cols="12">
                   <v-sheet dark height="auto" width="620px">
                     <v-container>
-                      <h1>Shipping</h1>
+                      <h1>Shipping Details</h1>
                       <v-row v-if="displayShipping" align="center" justify="center">
                         <v-col cols="12">
                           <h3>{{account.shipping.firstName.init}} {{account.shipping.lastName.init}}</h3>
@@ -187,7 +187,6 @@
                     <v-col cols="12">
                       <v-text-field
                         hide-details="auto"
-                        :rules="[rules.required(account.shipping.addressTwo.init, account.shipping.addressTwo.label)]"
                         v-model="account.shipping.addressTwo.init"
                         type="text"
                         light
@@ -241,33 +240,8 @@
                     </v-col>
 
                     <v-col cols="12">
-                      <v-radio-group :rules="[rules.selectionRequired]" v-model="shippingSelection">
-                        <v-radio
-                          hide-details="auto"
-                          color="green accent-2"
-                          :label="`${shippingRates.standard.label} | $${shippingRates.standard.value}`"
-                          :value="shippingRates.standard.value"
-                        ></v-radio>
-                        <v-radio
-                          class="mt-3"
-                          hide-details="auto"
-                          color="green accent-2"
-                          :label="`${shippingRates.prority.label} | $${shippingRates.prority.value}`"
-                          :value="shippingRates.prority.value"
-                        ></v-radio>
-                        <v-radio
-                          class="mt-3"
-                          hide-details="auto"
-                          color="green accent-2"
-                          :label="`${shippingRates.express.label} | $${shippingRates.express.value}`"
-                          :value="shippingRates.express.value"
-                        ></v-radio>
-                      </v-radio-group>
-                    </v-col>
-                    <v-col cols="5">
                       <v-btn
                         light
-                        block
                         color="green accent-2"
                         @click="continueToPayment"
                       >Continue To Payment</v-btn>
@@ -335,7 +309,6 @@
                         <v-col cols="12">
                           <v-text-field
                             hide-details="auto"
-                            :rules="[rules.required(account.billing.addressTwo.init, account.billing.addressTwo.label)]"
                             v-model="account.billing.addressTwo.init"
                             type="text"
                             light
@@ -401,9 +374,24 @@
                         </v-col>
                       </v-row>
                     </v-col>
+
                     <v-col cols="12">
                       <v-divider dark></v-divider>
                     </v-col>
+
+                    <!-- <v-col cols="12">
+                      <v-radio-group :rules="[rules.selectionRequired]" v-model="shippingSelection">
+                        <v-radio
+                          v-for="rate in shippingRates"
+                          :key="rate.id"
+                          hide-details="auto"
+                          color="green accent-2"
+                          :label="`${rate.service} (${rate.delivery_days || '1'} days) | $${rate.rate}`"
+                          :value="parseInt(rate.rate)"
+                        ></v-radio>
+                      </v-radio-group>
+                    </v-col>-->
+
                     <v-col cols="12">
                       <v-text-field
                         color="green accent-2"
@@ -459,7 +447,12 @@
                   </v-row>
                 </v-container>
               </v-form>
-              <v-btn color="orange accent-2" light @click="placeOrder">Place Order</v-btn>
+              <v-btn
+                color="orange accent-2"
+                :loading="isLoading"
+                light
+                @click="placeOrder"
+              >Place Order</v-btn>
             </v-stepper-content>
           </v-stepper>
         </v-col>
@@ -640,34 +633,19 @@ export default {
 
       cardPayment: {
         cardNum: {
-          init: "",
+          init: "4111-1111-1111-1111", //temp
           label: "Card Number",
           placeholder: "1234-1234-1234-1234"
         },
         cardCode: {
-          init: "",
+          init: "123", //temp
           label: "CCV",
           placeholder: "123"
         },
         cardExp: {
-          init: "",
+          init: "01/22", //temp
           label: "Exp. Date",
           placeholder: "01/20"
-        }
-      },
-
-      shippingRates: {
-        standard: {
-          value: (0.0).toPrecision(3),
-          label: "Standard USPS (4-5 Buisness Days)"
-        },
-        prority: {
-          value: (10.95).toPrecision(4),
-          label: "USPS Prority (3-4 Buisness Days)"
-        },
-        express: {
-          value: (99.0).toPrecision(4),
-          label: "USPS Express (1-2 Buisness Days)"
         }
       },
 
@@ -675,7 +653,7 @@ export default {
 
       rules: {
         required: (value, label) => !!value || `${label} is required.`,
-        selectionRequired: value => !!value || "Selection is required"
+        selectionRequired: value => !!value || "Selection is required."
       },
       showPass: false,
       createAccount: false,
@@ -688,81 +666,60 @@ export default {
       success: false,
       response: "",
       snackbar: false,
-      dialog: false
+      dialog: false,
+      isLoading: false
     };
   },
 
   methods: {
     paymentFormUpdate(opaqueData) {
-      const filteredAccount = {
-        firstName: this.account.firstName.init,
-        lastName: this.account.lastName.init,
-        email: this.account.email.init,
-        phoneNum: this.account.phoneNum.init,
-        shipping: {
-          firstName: this.account.shipping.firstName.init,
-          lastName: this.account.shipping.lastName.init,
-          addressOne: this.account.shipping.addressOne.init,
-          addressTwo: this.account.shipping.addressTwo.init,
-          city: this.account.shipping.city.init,
-          state: this.account.shipping.state.init,
-          zipCode: this.account.shipping.zipCode.init,
-          country: this.account.shipping.country.init
-        },
-        billing: {
-          firstName: this.account.billing.firstName.init,
-          lastName: this.account.billing.lastName.init,
-          addressOne: this.account.billing.addressOne.init,
-          addressTwo: this.account.billing.addressTwo.init,
-          city: this.account.billing.city.init,
-          state: this.account.billing.state.init,
-          zipCode: this.account.billing.zipCode.init,
-          country: this.account.billing.country.init,
-          phoneNum: this.account.billing.phoneNum.init
+      //create guest acccount
+      if (!this.getUser) {
+        const newUser = {
+          account: this.filterAccount,
+          isSubscribed: this.isSubscribed
+        };
+        try {
+          this.$store.dispatch("user/registerUser", newUser);
+        } catch (err) {
+          console.log(err);
         }
-      };
+      } else {
+        try {
+          this.$store.dispatch("user/updateCurrentUser", {
+            account: this.filterAccount
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
 
+      //place order
       axios
         .post("http://localhost:3000/api/checkouts/", {
-          account: filteredAccount,
+          account: this.filterAccount,
           items: this.items,
           dataDescriptor: opaqueData.dataDescriptor,
           dataValue: opaqueData.dataValue
         })
-        .then(res => {
+        .then(async res => {
           if (res.data != null) {
             this.cardPayment.cardNum.init = "";
             this.cardPayment.cardCode.init = "";
             this.cardPayment.cardExp.init = "";
 
-            //guest user acccount creation API
-            if (!this.getUser) {
-              const newuser = {
-                account: {
-                  firstName: filteredAccount.firstName,
-                  lastName: filteredAccount.lastName,
-                  email: filteredAccount.email,
-                  shipping: filteredAccount.shipping,
-                  billing: filteredAccount.billing
-                },
-                isSubscribed: this.isSubscribed
-              };
-
-              this.$store.dispatch("registerUser", newuser);
-            }
-
+            //Hide Orders Page Once payment is successful
             this.success = true;
-
             this.$router.push(
               `/checkout/successful-payment/${res.data.orderId}`
             );
           }
         })
         .catch(err => {
-          this.snackbar = true;
           this.response = err.response.data
             ? err.response.data.msgText
             : err.response.data.transErrText;
+          this.snackbar = true;
         });
     },
 
@@ -789,11 +746,22 @@ export default {
     },
 
     continueToPayment() {
+      // //get Shipping Rates from USPS
+
+      // try {
+      //   await this.$store.dispatch("getShippingRates", {
+      //     account: this.filterAccount
+      //   });
+      // } catch (err) {
+      //   console.log(err);
+      // }
+
       const isValid = this.$refs.shippingForm.validate();
 
       if (isValid) {
         this.step = 3;
         this.displayShipping = true;
+
         //by default set shipping fields equal to billing
         this.account.billing.firstName.init = this.account.shipping.firstName.init;
         this.account.billing.lastName.init = this.account.shipping.lastName.init;
@@ -812,6 +780,9 @@ export default {
 
       //validate payment form
       if (isValid) {
+        //start button loading
+        this.isLoading = true;
+
         const authData = {
           clientKey:
             "3bw8GPYE7cdkgbF8DZJ28t4Nx8nY9B9VvSrYKB9qNVBjr8N3Nsqm9y23EFTwq76L",
@@ -835,15 +806,44 @@ export default {
         console.log(secureData);
 
         //dispatch secure data
-        Accept.dispatchData(secureData, this.responseHandler);
+        // Accept.dispatchData(secureData, this.responseHandler);
       }
     },
 
-    getUserAccount() {
-      if (this.getUser) {
-        this.account.email.init = this.getUser.email;
-        this.account.firstName.init = this.getUser.firstName;
-        this.account.lastName.init = this.getUser.lastName;
+    async getUserAccount() {
+      try {
+        await this.$store.dispatch("user/getCurrentUser");
+      } catch (err) {
+        console.log(err.respone.data);
+      }
+
+      if (this.current_user) {
+        //account info
+        this.account.email.init = this.current_user.account.email;
+        this.account.firstName.init = this.current_user.account.firstName;
+        this.account.lastName.init = this.current_user.account.lastName;
+        this.account.phoneNum.init = this.current_user.account.billing.phoneNum;
+
+        //acount shipping
+        this.account.shipping.firstName.init = this.current_user.account.shipping.firstName;
+        this.account.shipping.lastName.init = this.current_user.account.shipping.lastName;
+        this.account.shipping.addressOne.init = this.current_user.account.shipping.addressOne;
+        this.account.shipping.addressTwo.init = this.current_user.account.shipping.addressTwo;
+        this.account.shipping.city.init = this.current_user.account.shipping.city;
+        this.account.shipping.state.init = this.current_user.account.shipping.state;
+        this.account.shipping.zipCode.init = this.current_user.account.shipping.zipCode;
+        this.account.shipping.country.init = this.current_user.account.shipping.country;
+
+        //acount billing
+        this.account.billing.firstName.init = this.current_user.account.billing.firstName;
+        this.account.billing.lastName.init = this.current_user.account.billing.lastName;
+        this.account.billing.addressOne.init = this.current_user.account.billing.addressOne;
+        this.account.billing.addressTwo.init = this.current_user.account.billing.addressTwo;
+        this.account.billing.city.init = this.current_user.account.billing.city;
+        this.account.billing.state.init = this.current_user.account.billing.state;
+        this.account.billing.zipCode.init = this.current_user.account.billing.zipCode;
+        this.account.billing.country.init = this.current_user.account.billing.country;
+        this.account.billing.phoneNum.init = this.current_user.account.billing.phoneNum;
       }
     },
 
@@ -890,8 +890,20 @@ export default {
   },
 
   computed: {
-    ...mapState(["cart"]),
-    ...mapGetters(["getTotalPrice", "getUser", "loggedIn"]),
+    ...mapState({
+      current_user: state => state.user.current_user,
+      cart: state => state.cart,
+      shippingRates: state => state.shippingRate
+    }),
+    ...mapGetters(["getTotalPrice"]),
+
+    getUser() {
+      return this.$store.getters["user/getUser"];
+    },
+
+    loggedIn() {
+      return this.$store.getters["user/loggedIn"];
+    },
 
     calculateTax() {
       const salesTax = 0.06;
@@ -924,10 +936,42 @@ export default {
 
     getCart() {
       return JSON.parse(localStorage.getItem("cart"));
+    },
+
+    //filter out the label from account
+    filterAccount() {
+      const filteredAccount = {
+        firstName: this.account.firstName.init,
+        lastName: this.account.lastName.init,
+        email: this.account.email.init,
+        shipping: {
+          firstName: this.account.shipping.firstName.init,
+          lastName: this.account.shipping.lastName.init,
+          addressOne: this.account.shipping.addressOne.init,
+          addressTwo: this.account.shipping.addressTwo.init,
+          city: this.account.shipping.city.init,
+          state: this.account.shipping.state.init,
+          zipCode: this.account.shipping.zipCode.init,
+          country: this.account.shipping.country.init
+        },
+        billing: {
+          firstName: this.account.billing.firstName.init,
+          lastName: this.account.billing.lastName.init,
+          addressOne: this.account.billing.addressOne.init,
+          addressTwo: this.account.billing.addressTwo.init,
+          city: this.account.billing.city.init,
+          state: this.account.billing.state.init,
+          zipCode: this.account.billing.zipCode.init,
+          country: this.account.billing.country.init,
+          phoneNum: this.account.billing.phoneNum.init
+        }
+      };
+
+      return filteredAccount;
     }
   },
 
-  mounted() {
+  created() {
     //mount Accept.js into checkout page when routed to
     let authAcceptScript = document.createElement("script");
     authAcceptScript.setAttribute(
@@ -937,7 +981,9 @@ export default {
     document.head.appendChild(authAcceptScript);
 
     //this loads the user email in the email field if the user is logged In
-    this.getUserAccount();
+    if (this.getUser) {
+      this.getUserAccount();
+    }
 
     //load users cart into account items
     this.items = this.getCart;

@@ -2,7 +2,7 @@
   <v-row class="section" align="center" justify="space-around">
     <v-col
       v-for="product in products"
-      :key="product.id"
+      :key="product._id"
       class="text-center"
       cols="12"
       md="3"
@@ -64,23 +64,23 @@ export default {
   },
 
   methods: {
-    addToCart(item) {
-      const { id, name, description, price, image } = item;
-
-      this.name = name;
-
+    async addToCart(item) {
       let newItemProp = {
-        id,
-        image,
-        name,
-        description,
-        price,
+        id: item._id,
+        image: item.image,
+        name: item.name,
+        description: item.description,
+        price: item.price,
         quantity: 1
       };
 
-      this.$store.dispatch("addToCart", newItemProp);
+      const itemName = await this.$store.dispatch("addToCart", newItemProp);
 
-      if (this.isInCart) this.snackbar = true;
+      if (itemName) {
+        this.name = itemName;
+        this.snackbar = true;
+      }
+
       this.$store.dispatch("updateCartState", true);
     }
   },

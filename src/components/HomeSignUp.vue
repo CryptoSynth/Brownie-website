@@ -102,11 +102,13 @@ export default {
         };
 
         try {
-          await this.$store.dispatch("registerUser", newuser);
+          await this.$store.dispatch("user/registerUser", newuser);
+          this.signup = false;
+          this.$router.push("/");
+          // location.reload();
         } catch (err) {
           console.log(err);
         }
-        this.signup = false; //should only close if the user sucessfully registers!
       }
     }
   }

@@ -1,101 +1,41 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import serverAPI from '../mock-server/server.api';
+import * as product from './modules/product';
+import * as user from './modules/user';
+import * as order from './modules/order';
+import * as shipping from './modules/shipping';
+import * as tracking from './modules/tracking';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
+  modules: {
+    product,
+    user,
+    order,
+    shipping,
+    tracking
+  },
+
   state: {
-    products: [],
     cart: [],
-    isInCart: false,
-    drawer: false,
-    user: '',
-    orders: []
+    drawer: false
   },
 
   mutations: {
-    SET_ORDERS: (state, orders) => {
-      state.orders = orders;
-    },
-
-    SET_USER: (state, user) => {
-      state.user = user;
-      localStorage.setItem('user', JSON.stringify(user));
-    },
-    CLEAR_USER: () => {
-      localStorage.removeItem('user');
-      location.reload();
-    },
     SET_CART: (state) => {
       localStorage.setItem('cart', JSON.stringify(state.cart));
-    },
-    SET_PRODUCTS: (state, products) => (state.products = products),
-    CREATE_PRODUCT: (state, product) => state.products.push(product),
-    UPDATE_PRODUCT: (state, payload) => {
-      const product = state.products.find((item) => item.id === payload.id);
-
-      product.image = payload.image ? payload.image : product.image;
-      product.name = payload.name ? payload.name : product.name;
-      product.description = payload.description
-        ? payload.description
-        : product.description;
-      product.price = payload.price ? payload.price : product.price;
-    },
-    DELETE_PRODUCT: (state, id) => {
-      const product = state.products.find((item) => item.id === id);
-
-      const index = state.products.indexOf(product);
-
-      state.products.splice(index, 1);
     },
     PUSH_TO_CART: (state, item) => {
       state.cart.push(item);
     },
     REMOVE_FROM_CART: (state, index) => state.cart.splice(index, 1),
+    UPDATE_CART_STATE: (state, isOpen) => (state.drawer = isOpen),
     INCREMENT_COUNT: (state, index) => (state.cart[index].quantity += 1),
-    DECREMENT_COUNT: (state, index) => (state.cart[index].quantity -= 1),
-    UPDATE_CART_STATE: (state, isOpen) => (state.drawer = isOpen)
+    DECREMENT_COUNT: (state, index) => (state.cart[index].quantity -= 1)
   },
 
   actions: {
-    async fetchOrders({ commit }) {
-      try {
-        const orders = await serverAPI.getOrders();
-        commit('SET_ORDERS', orders.data);
-      } catch (err) {
-        err.response.data;
-      }
-    },
-
-    async registerUser({ commit }, payload) {
-      try {
-        const user = await serverAPI.postUsers(payload);
-        commit('SET_USER', user.data);
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
-    async loginUser({ commit }, payload) {
-      try {
-        let user = await serverAPI.postAuth(payload);
-        commit('SET_USER', user.data);
-        return user.data;
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
-    async fetchProducts({ commit }) {
-      try {
-        const products = await serverAPI.getProducts();
-        commit('SET_PRODUCTS', products.data);
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
     // async createCheckout(payload) {
     //   console.log(payload);
 
@@ -108,49 +48,18 @@ export default new Vuex.Store({
     //   }
     // },
 
-    async createProduct({ commit }, payload) {
-      try {
-        const product = await serverAPI.postProduct(payload);
-        commit('CREATE_PRODUCT', product.data);
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
-    async updateProduct({ commit }, payload) {
-      try {
-        const product = await serverAPI.putProduct(payload);
-        commit('UPDATE_PRODUCT', product.data);
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
-    async deleteProduct({ commit }, payload) {
-      try {
-        const product = await serverAPI.deleteProduct(payload.id);
-        commit('DELETE_PRODUCT', product.data.id);
-      } catch (err) {
-        throw err.response.data;
-      }
-    },
-
     createCart({ commit }) {
       commit('SET_CART');
     },
 
     addToCart({ commit, state }, item) {
-      if (state.cart.length === 0) return commit('PUSH_TO_CART', item);
+      const isInCart = state.cart.find((cartItem) => cartItem.id === item.id);
 
-      state.isInCart = state.cart.some((cartItem) => {
-        return cartItem.id === item.id;
-      });
-
-      if (!state.isInCart) commit('PUSH_TO_CART', item);
+      if (isInCart) return item.name;
+      commit('PUSH_TO_CART', item);
     },
 
-    removeFromCart({ commit, state }, index) {
-      state.isInCart = false;
+    removeFromCart({ commit }, index) {
       commit('REMOVE_FROM_CART', index);
     },
 
@@ -163,17 +72,12 @@ export default new Vuex.Store({
 
     updateCartState({ commit }, isOpen) {
       commit('UPDATE_CART_STATE', isOpen);
-    },
-
-    logout({ commit }) {
-      commit('CLEAR_USER');
     }
   },
 
   getters: {
     getCartQuantity: (state) => state.cart.length,
-    loggedIn: (state) => !!state.user,
-    getUser: (state) => state.user,
+
     getTotalPrice: (state) => {
       let totalItemPrice = 0;
 
@@ -183,7 +87,7 @@ export default new Vuex.Store({
 
       return totalItemPrice;
     }
-  },
-
-  modules: {}
+  }
 });
+
+export default store;

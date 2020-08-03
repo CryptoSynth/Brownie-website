@@ -9,8 +9,9 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>Admin User</v-list-item-title>
-            <v-list-item-subtitle>Welcome, Admin User!</v-list-item-subtitle>
+            <v-list-item-title
+              class="text-capitalize"
+            >Welcome, {{current_user.account.firstName}} {{current_user.account.lastName}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -37,16 +38,25 @@
         </v-list>
         <div v-else class="pa-2">
           <v-btn light block @click.stop="mini = !mini">
-            <v-icon left color="pink accent-3">mdi-arrow-collapse-left</v-icon>Close
+            <v-icon left color="pink accent-3">mdi-arrow-collapse-left</v-icon>Close Menu
           </v-btn>
         </div>
       </template>
     </v-navigation-drawer>
 
     <v-row justify="center" align="center" no-gutters>
-      <v-col cols="12" class="text-center">
+      <v-col cols="12">
         <v-sheet light>
-          <h1 class="display-3 py-3 text-uppercase">Admin {{$route.name}}</h1>
+          <v-row align="center" justify="center">
+            <v-col class="text-center" cols="4">
+              <v-btn dark to="/">
+                <v-icon left large class="mr-5" color="pink accent-3">mdi-arrow-left</v-icon>Back To Store
+              </v-btn>
+            </v-col>
+            <v-col class="text-center" cols="8">
+              <h1 class="display-3 text-uppercase">Admin {{current_user.account.firstName}}</h1>
+            </v-col>
+          </v-row>
         </v-sheet>
       </v-col>
 
@@ -56,7 +66,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import store from "../store/index";
+
 export default {
+  name: "admin-dashboard",
+
   data() {
     return {
       admintool: true,
@@ -69,12 +84,43 @@ export default {
         },
         {
           title: "Products",
-          icon: "mdi-package-variant",
+          icon: "mdi-clipboard-text",
           url: "products"
         },
-        { title: "Orders", icon: "mdi-clipboard-text", url: "orders" }
+        { title: "Orders", icon: "mdi-package-variant", url: "orders" },
+        {
+          title: "Shipped Orders",
+          icon: "mdi-package-variant-closed",
+          url: "shipping"
+        }
       ]
     };
+  },
+
+  computed: {
+    ...mapState({
+      current_user: state => state.user.current_user
+    })
+  },
+
+  async beforeRouteEnter(to, from, next) {
+    try {
+      await store.dispatch("user/getCurrentUser");
+      next();
+    } catch (err) {
+      console.log(err);
+      next("/");
+    }
+  },
+
+  async created() {
+    try {
+      await this.$store.dispatch("order/getOrders");
+      await this.$store.dispatch("shipping/getAllShipping");
+      await this.$store.dispatch("tracking/getAllTracking");
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 </script>

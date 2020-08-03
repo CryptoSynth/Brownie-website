@@ -244,7 +244,7 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      image: "brownie_avatar.png",
+      image: "brownie_avatar.png", //put as prop in account
       account: {
         firstName: "",
         lastName: "",
