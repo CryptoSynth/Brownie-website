@@ -10,7 +10,7 @@ export const mutations = {
   SET_PRODUCTS: (state, products) => (state.products = products),
   CREATE_PRODUCT: (state, product) => state.products.push(product),
   UPDATE_PRODUCT: (state, payload) => {
-    const product = state.products.find((item) => item.id === payload.id);
+    const product = state.products.find((item) => item._id === payload._id);
 
     product.image = payload.image ? payload.image : product.image;
     product.name = payload.name ? payload.name : product.name;

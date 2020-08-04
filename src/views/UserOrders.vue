@@ -3,22 +3,32 @@
     <v-data-iterator dark :items="current_user.orders" item-key="invoiceId">
       <template v-slot:default="{items, isExpanded, expand}">
         <v-row align="center">
-          <v-col v-for="order in items" :key="order.id" cols="3">
+          <v-col v-for="order in items" :key="order.id" cols="4">
             <v-card light color="green accent-2">
               <v-card-title>Order Invoice Id: {{order.invoiceId}}</v-card-title>
               <v-card-text>
                 <p>Order Description: {{order.description}}</p>
-                <p>Order Shipping Id: {{order.shipping_id}}</p>
               </v-card-text>
               <v-card-actions>
-                <v-switch
-                  class="px-3"
-                  :input-value="isExpanded(order)"
-                  :label="isExpanded(order) ? 'Close Items' :'View Items'"
-                  @change="(v)=> expand(order, v)"
-                  color="red accent-2"
-                  inset
-                ></v-switch>
+                <v-row align="center" justify="center" no-gutters>
+                  <v-col cols="6">
+                    <v-switch
+                      class="px-3"
+                      :input-value="isExpanded(order)"
+                      :label="isExpanded(order) ? 'Close Items' :'View Items'"
+                      @change="(v)=> expand(order, v)"
+                      color="red accent-2"
+                      inset
+                    ></v-switch>
+                  </v-col>
+                  <v-col cols="6" class="text-center">
+                    <v-btn
+                      color="yellow accent-3"
+                      :href="order.tracking_url"
+                      target="_blank"
+                    >Track Order</v-btn>
+                  </v-col>
+                </v-row>
               </v-card-actions>
 
               <v-divider light></v-divider>

@@ -115,6 +115,7 @@ export default {
 
   async created() {
     try {
+      await this.$store.dispatch("user/getAllUsers");
       await this.$store.dispatch("order/getOrders");
       await this.$store.dispatch("shipping/getAllShipping");
       await this.$store.dispatch("tracking/getAllTracking");

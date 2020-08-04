@@ -39,7 +39,11 @@ export default {
   },
 
   computed: {
-    ...mapState(["shipping_list", "tracking_list"]),
+    ...mapState({
+      orders_list: state => state.order.orders_list,
+      shipping_list: state => state.shipping.shipping_list,
+      tracking_list: state => state.tracking.tracking_list
+    }),
 
     printLabel() {
       const shipping = this.shipping_list.find(

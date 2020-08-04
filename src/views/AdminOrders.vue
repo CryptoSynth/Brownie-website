@@ -5,28 +5,26 @@
         <v-data-table
           light
           :headers="headers"
-          :items="orders_list"
+          :items="users_list"
           show-expand
           class="elevation-1 my-3"
-          item-key="id"
+          item-key="_id"
         >
-          <template v-slot:top>
+          <template #top>
             <v-toolbar light flat color="green accent-2">
               <v-toolbar-title class="text-uppercase">Orders Managment</v-toolbar-title>
             </v-toolbar>
           </template>
 
-          <template
-            v-slot:item.accountName="{item}"
-          >{{item.account.firstName}} {{item.account.lastName}}</template>
+          <template #item.accountName="{item}">{{item.account.firstName}} {{item.account.lastName}}</template>
 
-          <template v-slot:item.orders="{item}">{{item.orders.length}}</template>
+          <template #item.orders="{item}">{{item.orders.length}}</template>
 
-          <template v-slot:item.fullfillmentStatus="{}">
+          <template #item.fullfillmentStatus="{}">
             <v-chip light color="orange">Pending...</v-chip>
           </template>
 
-          <template v-slot:item.data-table-expand="{ expand, isExpanded }">
+          <template #item.data-table-expand="{expand, isExpanded}">
             <v-btn
               dark
               :loading="isLoading"
@@ -36,45 +34,31 @@
             >Show Order Details</v-btn>
           </template>
 
-          <template v-slot:expanded-item="{item}">
-            <v-container fluid>
-              <v-row dense align="start" justify="center">
-                <v-col v-for="(order, index) in item.orders" :key="index">
-                  <v-card min-width="250" color="pink accent-1" dark>
-                    <v-card-title class="headline" v-text="order.invoiceId"></v-card-title>
-                    <v-card-subtitle v-text="order.description"></v-card-subtitle>
+          <template #expanded-item="{item, headers}">
+            <td :colspan="headers.length">
+              <v-container fluid>
+                <v-row dense>
+                  <v-col v-for="(order, index) in item.orders" :key="index" cols="4">
+                    <v-card color="green accent-2" light>
+                      <v-card-title class="headline" v-text="order.invoiceId"></v-card-title>
+                      <v-card-subtitle v-text="order.description"></v-card-subtitle>
 
-                    <v-sheet
-                      :key="item.id"
-                      v-for="item in order.items"
-                      class="d-flex justify-content-around align-center ma-2"
-                      color="black"
-                    >
-                      <v-avatar class="ma-3" size="80" tile>
-                        <v-img :src="require(`../assets/images/${item.image}`)"></v-img>
-                      </v-avatar>
+                      <AdminItemListSwitch :order="order" />
 
-                      <ul class="pa-1">
-                        <p style="font-size: .8rem" class="ma-0">Name: {{item.name}}</p>
-                        <p style="font-size: .8rem" class="ma-0">Descripton: {{item.description}}</p>
-                        <p style="font-size: .8rem" class="ma-0">Price: {{item.price}}</p>
-                        <p style="font-size: .8rem" class="ma-0">Quantity: {{item.quantity}}</p>
-                      </ul>
-                    </v-sheet>
-
-                    <AdminFullfillmentButton
-                      class="pa-3"
-                      :shipping_id="order.shipping_id"
-                      :user_order="item"
-                      @orderFullfilled="orderFullfilled"
-                    />
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-container>
+                      <AdminFullfillmentButton
+                        class="pa-2"
+                        :shipping_id="order.shipping_id"
+                        :user_order="item"
+                        @orderFullfilled="orderFullfilled"
+                      />
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </td>
           </template>
 
-          <template v-slot:no-data>
+          <template #no-data>
             <h1>Orders...</h1>
           </template>
         </v-data-table>
@@ -86,18 +70,19 @@
 <script>
 import { mapState } from "vuex";
 import AdminFullfillmentButton from "../components/AdminFullfillmentButton";
+import AdminItemListSwitch from "../components/AdminItemListSwitch";
 
 export default {
   name: "orders",
 
   components: {
-    AdminFullfillmentButton
+    AdminFullfillmentButton,
+    AdminItemListSwitch
   },
 
   data() {
     return {
       headers: [
-        { text: "Random ID", value: "id" },
         { text: "Account Name", value: "accountName" },
         { text: "Orders", value: "orders" },
         {
@@ -108,7 +93,8 @@ export default {
         { text: "Order Details", value: "data-table-expand" }
       ],
 
-      current_user_order: ""
+      current_user_order: "",
+      showList: false
     };
   },
 
@@ -120,9 +106,10 @@ export default {
 
   computed: {
     ...mapState({
-      order: state => state.order.order_list,
-      shipping: state => state.order.shipping_list,
-      tracking: state => state.order.tracking_list
+      users_list: state => state.user.users_list,
+      orders_list: state => state.order.orders_list,
+      shipping_list: state => state.shipping.shipping_list,
+      tracking_list: state => state.tracking.tracking_list
     }),
 
     isLoading() {

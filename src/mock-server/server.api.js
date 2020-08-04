@@ -51,6 +51,7 @@ export default {
 
   //User API
   postUsers: (newuser) => serverApi.post('users/', newuser),
+  getAllUsers: () => serverApi.get('users/'),
   getCurrentUser: () => serverApi.get('users/me/'),
   putCurrentUser: (update_user) => serverApi.put('users/me', update_user),
   postAuth: (user) => serverApi.post('user-auth/', user),

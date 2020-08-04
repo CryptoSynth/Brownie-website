@@ -4,6 +4,7 @@ export const namespaced = true;
 
 export const state = {
   user: '',
+  users_list: '',
   current_user: '',
   token: ''
 };
@@ -12,6 +13,9 @@ export const mutations = {
   SET_USER: (state, user) => {
     state.user = user;
     localStorage.setItem('user', JSON.stringify(user));
+  },
+  GET_ALL_USERS: (state, users) => {
+    state.users_list = users;
   },
   SET_CURRENT_USER: (state, current_user) => {
     state.current_user = current_user;
@@ -67,6 +71,15 @@ export const actions = {
       return true;
     } catch (err) {
       throw err.response.data;
+    }
+  },
+
+  async getAllUsers({ commit }) {
+    try {
+      const users = await serverAPI.getAllUsers();
+      commit('GET_ALL_USERS', users.data);
+    } catch (err) {
+      console.log(err);
     }
   },
 
