@@ -1,61 +1,72 @@
 <template>
-  <div>
-    <div v-if="fullfilled">
-      <v-navigation-drawer width="100%" light permanent>
-        <v-list light nav dense>
-          <v-list-item-group>
-            <v-list-item :href="printLabel" target="_blank">
-              <v-list-item-icon>
-                <v-icon color="orange">mdi-download</v-icon>
-              </v-list-item-icon>
+  <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+    <template #activator="{on}">
+      <v-btn dark block color="pink accent-3" v-on="on">Order Checklist</v-btn>
+    </template>
 
-              <v-list-item-content style="color: orange">Print Label</v-list-item-content>
-            </v-list-item>
+    <v-card>
+      <v-toolbar dark color="pink accent-3">
+        <v-btn icon dark @click="dialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-toolbar-title>Order Checklist</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn :disabled="!valid" color="success" @click="fullfillOrder">Fullfill Order</v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
 
-            <v-list-item>
-              <v-list-item-icon>
-                <v-icon color="error">mdi-emoticon-frown</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content style="color: red">Refund, add confirmation</v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
+      <v-form ref="checklist" v-model="valid">
+        <v-list subheader>
+          <v-subheader>Steps</v-subheader>
+          <v-list-item v-for="(item, index) in checklist" :key="index">
+            <template #default="{active}">
+              <v-list-item-action :key="index">
+                <v-checkbox :rules="required" :v-model="active" color="primary" required></v-checkbox>
+              </v-list-item-action>
+
+              <v-list-item-content>
+                <v-list-item-title>{{item.title}}</v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </v-list-item>
         </v-list>
-      </v-navigation-drawer>
-    </div>
-
-    <v-btn v-else color="primary" @click="fullfillOrder">Fullfill Order</v-btn>
-  </div>
+      </v-form>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
-import { mapState } from "vuex";
 export default {
-  props: ["shipping_id"],
+  props: ["order"],
 
   data() {
     return {
-      fullfilled: false
+      dialog: false,
+      checklist: [
+        { title: "Step 1.." },
+        { title: "Step 2.." },
+        { title: "Step 3.." },
+        { title: "Step 4.." },
+        { title: "Step 4.." },
+        { title: "Step 4.." },
+        { title: "Step 4.." }
+      ],
+      required: [v => !!v || "Step Required."],
+      valid: false
     };
   },
 
-  computed: {
-    ...mapState({
-      orders_list: state => state.order.orders_list,
-      shipping_list: state => state.shipping.shipping_list,
-      tracking_list: state => state.tracking.tracking_list
-    }),
-
-    printLabel() {
-      const shipping = this.shipping_list.find(
-        shipping => shipping.id === this.shipping_id
-      );
-
-      return shipping.postage_label.label_url;
-    }
-  },
-
   methods: {
-    fullfillOrder() {}
+    async fullfillOrder() {
+      const isValid = this.$refs.checklist.validate();
+
+      if (isValid) {
+        this.valid = true;
+        this.dialog = false;
+        await this.$store.dispatch("order/fullfillOrder", this.order._id);
+      }
+    }
   }
 };
 </script>

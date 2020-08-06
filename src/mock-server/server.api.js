@@ -61,6 +61,8 @@ export default {
 
   //Order API
   getOrders: () => serverApi.get('orders/'),
+  postFullfillment: (order_id) =>
+    serverApi.post(`orders/fullfilled/${order_id}`),
 
   //Shipping API
   getAllShipping: () => serverApi.get('shipping/shipments/all'),

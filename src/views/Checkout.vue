@@ -806,7 +806,7 @@ export default {
         console.log(secureData);
 
         //dispatch secure data
-        // Accept.dispatchData(secureData, this.responseHandler);
+        Accept.dispatchData(secureData, this.responseHandler);
       }
     },
 
