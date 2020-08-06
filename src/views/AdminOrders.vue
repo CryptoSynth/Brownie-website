@@ -20,9 +20,9 @@
 
           <template #item.orders="{item}">{{item.orders.length}}</template>
 
-          <template #item.fullfillmentStatus="{}">
-            <v-chip light color="orange">Pending...</v-chip>
-          </template>
+          <template #item.pendingFullfillment="{item}">{{ordersPendingFullfillment(item)}}</template>
+
+          <template #item.completedFullfillment="{item}">{{ordersCompleted(item)}}</template>
 
           <template #item.data-table-expand="{expand, isExpanded}">
             <v-btn
@@ -40,17 +40,61 @@
                 <v-row dense>
                   <v-col v-for="(order, index) in item.orders" :key="index" cols="4">
                     <v-card color="green accent-2" light>
-                      <v-card-title class="headline" v-text="order.invoiceId"></v-card-title>
+                      <v-navigation-drawer
+                        v-model="drawer"
+                        :mini-variant.sync="mini"
+                        absolute
+                        right
+                      >
+                        <v-list-item class="px-2">
+                          <v-btn v-if="mini" icon @click.stop="mini = !mini">
+                            <v-icon>mdi-chevron-right</v-icon>
+                          </v-btn>
+
+                          <v-btn icon @click.stop="mini = !mini">
+                            <v-icon>mdi-chevron-left</v-icon>
+                          </v-btn>
+                        </v-list-item>
+
+                        <v-divider></v-divider>
+
+                        <v-form ref="checklist" v-model="valid">
+                          <v-list>
+                            <v-list-item v-for="(item, index) in checklist" :key="index">
+                              <template #default="{active}">
+                                <v-list-item-action :key="index">
+                                  <v-checkbox
+                                    :rules="required"
+                                    :v-model="active"
+                                    color="primary"
+                                    required
+                                  ></v-checkbox>
+                                </v-list-item-action>
+
+                                <v-list-item-content>
+                                  <v-list-item-title>{{item.title}}</v-list-item-title>
+                                </v-list-item-content>
+                              </template>
+                            </v-list-item>
+                          </v-list>
+
+                          <v-btn
+                            :disabled="!valid"
+                            block
+                            color="success"
+                            @click="completeChecklist"
+                          >Complete</v-btn>
+                        </v-form>
+                      </v-navigation-drawer>
+                      <v-card-title class="headline pb-8">
+                        <v-chip v-if="order.isFullFilled" color="success">Complete</v-chip>
+                        <v-chip v-else color="orange">Order {{order.invoiceId}} Pending...</v-chip>
+                      </v-card-title>
                       <v-card-subtitle v-text="order.description"></v-card-subtitle>
 
                       <AdminItemListSwitch :order="order" />
 
-                      <AdminFullfillmentButton
-                        class="pa-2"
-                        :shipping_id="order.shipping_id"
-                        :user_order="item"
-                        @orderFullfilled="orderFullfilled"
-                      />
+                      <AdminFullfillmentButton class="pa-2" :shipping_id="order.shipping_id" />
                     </v-card>
                   </v-col>
                 </v-row>
@@ -86,21 +130,47 @@ export default {
         { text: "Account Name", value: "accountName" },
         { text: "Orders", value: "orders" },
         {
-          text: "Order Fullfillment",
-          value: "fullfillmentStatus",
+          text: "Orders Pending Fullfillment",
+          value: "pendingFullfillment",
+          sortable: false
+        },
+        {
+          text: "Orders Fullfilled",
+          value: "completedFullfillment",
           sortable: false
         },
         { text: "Order Details", value: "data-table-expand" }
       ],
 
-      current_user_order: "",
-      showList: false
+      showList: false,
+      drawer: true,
+      mini: true,
+      checklist: [
+        { title: "Step 1.." },
+        { title: "Step 2.." },
+        { title: "Step 3.." },
+        { title: "Step 4.." }
+      ],
+      required: [v => !!v || "Step Required."],
+      valid: false
     };
   },
 
   methods: {
-    orderFullfilled(value) {
-      this.current_user_order = value;
+    ordersCompleted(item) {
+      return item.orders.filter(order => order.isFullfilled === true).length;
+    },
+
+    ordersPendingFullfillment(item) {
+      return item.orders.filter(order => order.isFullfilled === false).length;
+    },
+
+    completeChecklist() {
+      const isValid = this.$refs.checklist.validate();
+
+      if (isValid) {
+        this.valid = true;
+      }
     }
   },
 
